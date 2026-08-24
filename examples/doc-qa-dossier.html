@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The document Q&amp;A service you just generated</title>
+<style>/* Feynman dossier — self-contained styles. No external fonts, no network. */
+
+:root{
+  --bg:#faf8f4; --panel:#ffffff; --ink:#1b1a17; --muted:#6b6559; --line:#e2ddd2;
+  --accent:#b4472a; --accent-soft:#fbeee9; --ok:#2f6f4e; --ok-soft:#e8f3ec;
+  --warn:#8a6d1f; --warn-soft:#fdf4dd; --lock:#8d8578; --code:#f3efe7;
+  --shadow:0 1px 2px rgba(27,26,23,.05),0 4px 16px rgba(27,26,23,.04);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --serif:Iowan Old Style,Palatino,"Palatino Linotype",Georgia,serif;
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14140f; --panel:#1c1c17; --ink:#eae5da; --muted:#9b9485;
+    --line:#2f2e27; --accent:#e07a55; --accent-soft:#2a1d17; --ok:#7fc79d; --ok-soft:#17241c;
+    --warn:#d9bb63; --warn-soft:#26210f; --lock:#7a7365; --code:#111110;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  }
+}
+[data-theme="dark"]{
+  --bg:#14140f; --panel:#1c1c17; --ink:#eae5da; --muted:#9b9485;
+  --line:#2f2e27; --accent:#e07a55; --accent-soft:#2a1d17; --ok:#7fc79d; --ok-soft:#17241c;
+  --warn:#d9bb63; --warn-soft:#26210f; --lock:#7a7365; --code:#111110;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+
+/* ---------- language switching ---------- */
+.lb{display:none}
+body[data-lang="en"] .lb[data-lang="en"],
+body[data-lang="es"] .lb[data-lang="es"],
+body[data-lang="pt"] .lb[data-lang="pt"]{display:block}
+span.lb{display:none}
+body[data-lang="en"] span.lb[data-lang="en"],
+body[data-lang="es"] span.lb[data-lang="es"],
+body[data-lang="pt"] span.lb[data-lang="pt"]{display:inline}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:20px;
+  justify-content:space-between;padding:14px 26px;background:var(--panel);
+  border-bottom:1px solid var(--line);flex-wrap:wrap}
+.titles h1{margin:0;font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;max-width:62ch}
+.controls{display:flex;align-items:center;gap:14px}
+.progresswrap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.progressbar{width:120px;height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.progressbar i{display:block;height:100%;width:0;background:var(--accent);
+  transition:width .35s cubic-bezier(.4,0,.2,1)}
+.langswitch{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.langbtn{background:transparent;border:0;padding:6px 11px;font:600 11px/1 var(--sans);
+  letter-spacing:.06em;color:var(--muted);cursor:pointer}
+.langbtn.on{background:var(--accent);color:#fff}
+.iconbtn{background:transparent;border:1px solid var(--line);border-radius:8px;
+  width:30px;height:28px;cursor:pointer;color:var(--muted);font-size:14px}
+
+/* ---------- layout ---------- */
+.layout{display:flex;gap:0;align-items:flex-start;max-width:1180px;margin:0 auto;padding:0 22px}
+.sidenav{position:sticky;top:86px;width:210px;flex:0 0 210px;padding:26px 0;display:flex;
+  flex-direction:column;gap:2px}
+.sidenav a{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;
+  color:var(--muted);text-decoration:none;font-size:13.5px}
+.sidenav a:hover{background:var(--panel);color:var(--ink)}
+.sidenav a.active{color:var(--ink);font-weight:600}
+.sidenav .dot{width:7px;height:7px;border-radius:99px;background:var(--line);flex:0 0 7px}
+.sidenav a.done .dot{background:var(--ok)}
+.sidenav a.unver .dot{background:var(--warn)}
+main{flex:1;min-width:0;padding:26px 0 120px 34px}
+@media(max-width:900px){.layout{flex-direction:column;padding:0 14px}
+  .sidenav{position:static;width:auto;flex:none;flex-direction:row;flex-wrap:wrap;padding:12px 0}
+  main{padding:8px 0 80px}}
+
+/* ---------- sections ---------- */
+.sec{margin-bottom:56px;scroll-margin-top:96px}
+.sec h2{display:flex;align-items:baseline;gap:12px;font-family:var(--serif);
+  font-size:26px;font-weight:600;margin:0 0 18px;letter-spacing:-.015em}
+.secnum{font:600 12px/1 var(--mono);color:var(--accent);letter-spacing:.1em}
+.sec:not(.open) .secbody{display:none}
+.sec.open .lockmsg{display:none}
+.lockmsg{background:var(--panel);border:1px dashed var(--line);border-radius:12px;
+  padding:22px 24px;color:var(--lock);font-size:14.5px}
+.lockmsg .btn{margin-top:12px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px 24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-weight:600}
+.card.final{background:var(--accent-soft);border-color:var(--accent)}
+p{margin:0 0 .8em}p:last-child{margin-bottom:0}
+h4{margin:18px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+code{font-family:var(--mono);font-size:.88em;background:var(--code);padding:1px 5px;border-radius:4px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:9px;padding:14px 16px;
+  overflow-x:auto;margin:10px 0}
+pre code{background:none;padding:0;font-size:12.5px;line-height:1.55}
+.filename{font:600 11.5px/1 var(--mono);color:var(--accent);margin-bottom:6px}
+.hint{color:var(--muted);font-size:13.5px;margin-bottom:10px}
+.anchor{display:inline-block;font:500 11px/1.5 var(--mono);color:var(--muted);
+  background:var(--code);border:1px solid var(--line);border-radius:5px;padding:2px 6px;margin-top:8px}
+
+/* ---------- orientation ---------- */
+.filelist,.cons,.mslist{list-style:none;padding:0;margin:0}
+.filelist li{padding:9px 0;border-bottom:1px solid var(--line)}
+.filelist li:last-child{border:0}
+.path{font:600 12.5px/1.6 var(--mono);color:var(--accent)}
+.role{color:var(--muted);font-size:14px}
+.flow{list-style:none;padding:0;margin:0}
+.flow li{display:flex;gap:13px;padding:11px 0;border-left:2px solid var(--line);
+  margin-left:11px;padding-left:20px;position:relative}
+.flow .num{position:absolute;left:-12px;top:11px;width:22px;height:22px;border-radius:99px;
+  background:var(--accent);color:#fff;font:600 11px/22px var(--mono);text-align:center}
+.decision{padding:13px 0;border-bottom:1px solid var(--line)}
+.decision:last-child{border:0}
+.choice{font-weight:600}
+.dinstead{color:var(--muted);font-size:13px;margin-bottom:5px}
+.cons li{padding:7px 0 7px 20px;position:relative}
+.cons li:before{content:"—";position:absolute;left:0;color:var(--accent)}
+
+/* ---------- inputs ---------- */
+.ta{width:100%;min-height:120px;resize:vertical;background:var(--bg);color:var(--ink);
+  border:1px solid var(--line);border-radius:9px;padding:13px 15px;font:15px/1.6 var(--sans);
+  margin-top:10px}
+.ta.small{min-height:74px}
+.ta:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+.ta.bad{border-color:var(--warn);background:var(--warn-soft)}
+.meter{font:12px/1 var(--mono);color:var(--muted);margin-top:6px}
+.meter .short{color:var(--warn);margin-left:8px}
+.jargon{margin-top:9px}
+.jargon.on{background:var(--warn-soft);border:1px solid var(--warn);border-radius:9px;padding:11px 13px}
+.jargon .jtitle{font-size:13px;font-weight:600;color:var(--warn);margin-bottom:6px}
+.jargon .jhelp{font-size:13px;color:var(--muted);margin-top:7px}
+.chip{display:inline-block;font:600 11.5px/1 var(--mono);background:var(--warn);color:#fff;
+  padding:4px 8px;border-radius:5px;margin:3px 5px 0 0}
+
+.btn{display:inline-block;margin-top:12px;margin-right:8px;background:var(--accent);color:#fff;
+  border:0;border-radius:8px;padding:9px 16px;font:600 13.5px/1 var(--sans);cursor:pointer}
+.btn:disabled{background:var(--line);color:var(--lock);cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.glass{background:transparent;color:var(--lock);border:1px dashed var(--line);font-weight:500;
+  font-size:12px;padding:8px 12px}
+.btn.glass:hover{color:var(--warn);border-color:var(--warn)}
+
+.revealbox{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);
+  animation:fade .3s ease}
+.revealbox.shown{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* ---------- concepts ---------- */
+.concept{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:22px 26px;margin-bottom:20px;box-shadow:var(--shadow)}
+.chead{display:flex;align-items:flex-start;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.cnum{font:700 12px/1.9 var(--mono);color:var(--accent)}
+.chead h3{margin:0;font-family:var(--serif);font-size:20px;font-weight:600}
+.oneliner{color:var(--muted);font-size:14px;margin-top:3px}
+.badge{margin-left:auto;font:600 10px/1 var(--mono);letter-spacing:.09em;padding:5px 9px;
+  border-radius:5px;white-space:nowrap}
+.badge.done{background:var(--ok-soft);color:var(--ok)}
+.badge.unver{background:var(--warn-soft);color:var(--warn)}
+.stage{padding-top:6px}
+.gap{padding:14px 0;border-bottom:1px solid var(--line)}
+.gap:last-child{border:0}
+.gap .q{font-weight:600}
+.analogyzone,.gapzone{margin-top:20px;padding-top:16px;border-top:1px dashed var(--line)}
+.breaks{margin-top:10px;font-size:14px}
+.breaks b{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--warn)}
+
+.seniorzone{display:none;margin-top:20px;padding-top:18px;border-top:2px solid var(--accent)}
+body.senior-open .seniorzone{display:block}
+.srow{margin-bottom:14px}
+.srow>b{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--accent);margin-bottom:4px}
+.fm{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin:8px 0}
+.mode{font-weight:600}
+.fmrow{font-size:14px;margin-top:5px}
+.fmrow b{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:6px}
+.alt{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin:8px 0}
+.optname{font-weight:600}
+
+/* ---------- rebuild ---------- */
+.mslist li.ms{padding:13px 0;border-bottom:1px solid var(--line)}
+.mslist li.ms:last-child{border:0}
+.ms label{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600}
+.ms input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.msbody{margin:6px 0 0 27px;color:var(--muted);font-size:14.5px}
+.msbody .acc{margin-top:6px;color:var(--ink);font-size:14px}
+.msbody .acc b{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ok);margin-right:6px}
+details{margin-top:8px}
+summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
+.srcfile{margin-bottom:14px}
+
+/* ---------- flashcards ---------- */
+.flashgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:11px}
+.flashcard{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px;
+  cursor:pointer;min-height:96px;font-size:14px}
+.flashcard .back{display:none;color:var(--accent)}
+.flashcard.flip .front{display:none}
+.flashcard.flip .back{display:block}
+
+/* ---------- report ---------- */
+#reportbody{margin:14px 0}
+.rrow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);
+  font-size:14.5px}
+.rrow:last-child{border:0}
+.rstat{margin-left:auto;font:600 10px/1 var(--mono);letter-spacing:.09em;padding:5px 9px;border-radius:5px}
+.rstat.v{background:var(--ok-soft);color:var(--ok)}
+.rstat.u{background:var(--warn-soft);color:var(--warn)}
+.rstat.n{background:var(--code);color:var(--lock)}
+</style>
+</head>
+<body data-lang="en">
+<header class="topbar">
+  <div class="brand">
+    <div class="titles"><h1><span class="lb " data-lang="en">The document Q&amp;A service you just generated</span><span class="lb " data-lang="es">El servicio de preguntas sobre documentos que acabás de generar</span></h1><div class="lb sub" data-lang="en"><p>By the end you will rebuild this from an empty file and defend every decision in a design review.</p></div><div class="lb sub" data-lang="es"><p>Al terminar vas a reconstruirlo desde un archivo vacío y defender cada decisión en un design review.</p></div></div>
+  </div>
+  <div class="controls">
+    <div class="progresswrap"><div class="progressbar"><i id="pbar"></i></div><span id="ppct">0%</span></div>
+    <div class="langswitch"><button class="langbtn" data-setlang="en">EN</button><button class="langbtn" data-setlang="es">ES</button></div>
+    <button class="iconbtn" id="themebtn" title="theme" aria-label="theme"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
+  </div>
+</header>
+<div class="layout">
+  <nav class="sidenav"><a href="#orientation" data-nav="orientation"><span class="dot"></span><span class="lb " data-lang="en">What the AI built</span><span class="lb " data-lang="es">Qué construyó la IA</span></a><a href="#blank" data-nav="blank"><span class="dot"></span><span class="lb " data-lang="en">The blank page</span><span class="lb " data-lang="es">La hoja en blanco</span></a><a href="#concepts" data-nav="concepts"><span class="dot"></span><span class="lb " data-lang="en">The load-bearing ideas</span><span class="lb " data-lang="es">Las ideas que sostienen todo</span></a><a href="#rebuild" data-nav="rebuild"><span class="dot"></span><span class="lb " data-lang="en">Rebuild it yourself</span><span class="lb " data-lang="es">Reconstruilo vos</span></a><a href="#senior" data-nav="senior"><span class="dot"></span><span class="lb " data-lang="en">Senior register</span><span class="lb " data-lang="es">Registro senior</span></a><a href="#report" data-nav="report"><span class="dot"></span><span class="lb " data-lang="en">Report</span><span class="lb " data-lang="es">Informe</span></a></nav>
+  <main>
+<section id="orientation" class="sec open" data-sec="orientation">
+  <h2><span class="secnum">00</span><span class="lb " data-lang="en">What the AI built</span><span class="lb " data-lang="es">Qué construyó la IA</span></h2>
+  <div class="card"><h3><span class="lb " data-lang="en">The problem</span><span class="lb " data-lang="es">El problema</span></h3><div class="lb " data-lang="en"><p>A support team has 4,000 internal help pages. People ask questions in their own words, and the answers exist somewhere in those pages, but nobody can find them. A language model on its own cannot help: it has never read those pages, and pasting all 4,000 into every question is far too much text for it to accept.</p></div><div class="lb " data-lang="es"><p>Un equipo de soporte tiene 4.000 páginas de ayuda internas. La gente pregunta con sus propias palabras y las respuestas están en algún lado de esas páginas, pero nadie las encuentra. Un modelo de lenguaje solo no alcanza: nunca leyó esas páginas, y pegarle las 4.000 en cada pregunta es muchísimo más texto del que puede aceptar.</p></div></div>
+  <div class="card"><h3><span class="lb " data-lang="en">What was built</span><span class="lb " data-lang="es">Qué se construyó</span></h3><div class="lb " data-lang="en"><p>A small web service with two jobs. <strong>Ingestion</strong> runs once: it reads every help page, cuts each one into overlapping passages, turns every passage into a list of numbers that captures its meaning, and files them in a database that can find similar lists quickly.</p><p><strong>Answering</strong> runs on every question: it converts the question into the same kind of number list, asks the database for the five closest passages, pastes only those five into a prompt, and asks the model to answer using nothing but that text.</p></div><div class="lb " data-lang="es"><p>Un servicio web chico con dos trabajos. La <strong>ingesta</strong> corre una sola vez: lee cada página de ayuda, la corta en pasajes que se superponen, convierte cada pasaje en una lista de números que captura su significado y los archiva en una base de datos que encuentra listas parecidas rápido.</p><p>La <strong>respuesta</strong> corre en cada pregunta: convierte la pregunta en el mismo tipo de lista de números, le pide a la base los cinco pasajes más cercanos, pega solamente esos cinco en un prompt y le pide al modelo que responda usando nada más que ese texto.</p></div></div>
+  <div class="card"><h3><span class="lb " data-lang="en">The map</span><span class="lb " data-lang="es">El mapa</span></h3><ul class="filelist"><li><span class="path">src/ingest.py</span><div class="lb role" data-lang="en"><p>Reads the help pages, splits them, and writes them into the store. Run manually, not per request.</p></div><div class="lb role" data-lang="es"><p>Lee las páginas de ayuda, las parte y las escribe en el almacén. Se corre a mano, no en cada request.</p></div></li><li><span class="path">src/chunker.py</span><div class="lb role" data-lang="en"><p>Cuts a long page into overlapping passages of roughly 800 characters.</p></div><div class="lb role" data-lang="es"><p>Corta una página larga en pasajes superpuestos de unos 800 caracteres.</p></div></li><li><span class="path">src/store.py</span><div class="lb role" data-lang="en"><p>Wraps Postgres + pgvector. Two functions: <code>add()</code> and <code>search()</code>.</p></div><div class="lb role" data-lang="es"><p>Envuelve Postgres + pgvector. Dos funciones: <code>add()</code> y <code>search()</code>.</p></div></li><li><span class="path">src/answer.py</span><div class="lb role" data-lang="en"><p>The per-question path: search, build the prompt, call the model, return the answer with its sources.</p></div><div class="lb role" data-lang="es"><p>El camino por pregunta: buscar, armar el prompt, llamar al modelo, devolver la respuesta con sus fuentes.</p></div></li><li><span class="path">src/api.py</span><div class="lb role" data-lang="en"><p>One FastAPI endpoint, <code>POST /ask</code>. Validation and error shaping only.</p></div><div class="lb role" data-lang="es"><p>Un endpoint de FastAPI, <code>POST /ask</code>. Solo validación y forma de los errores.</p></div></li></ul></div>
+  <div class="card"><h3><span class="lb " data-lang="en">One input, all the way through</span><span class="lb " data-lang="es">Un input, de punta a punta</span></h3><ol class="flow"><li><span class="num">1</span><div class="flowbody"><div class="lb " data-lang="en"><p>A question arrives as JSON: <code>{&quot;q&quot;: &quot;how do I reset a customer password?&quot;}</code>. It is trimmed and rejected if empty or over 500 characters.</p></div><div class="lb " data-lang="es"><p>Llega una pregunta como JSON: <code>{&quot;q&quot;: &quot;cómo reseteo la contraseña de un cliente?&quot;}</code>. Se recorta y se rechaza si está vacía o pasa los 500 caracteres.</p></div><span class="anchor" title="source">src/api.py:18</span></div></li><li><span class="num">2</span><div class="flowbody"><div class="lb " data-lang="en"><p>The question text is sent to the embedding model and comes back as 1,536 numbers.</p></div><div class="lb " data-lang="es"><p>El texto de la pregunta va al modelo de embeddings y vuelve como 1.536 números.</p></div><span class="anchor" title="source">src/answer.py:22</span></div></li><li><span class="num">3</span><div class="flowbody"><div class="lb " data-lang="en"><p>Those numbers go to <code>store.search(vec, k=5)</code>, which returns the five passages whose own numbers point in the most similar direction.</p></div><div class="lb " data-lang="es"><p>Esos números van a <code>store.search(vec, k=5)</code>, que devuelve los cinco pasajes cuyos números apuntan en la dirección más parecida.</p></div><span class="anchor" title="source">src/store.py:41</span></div></li><li><span class="num">4</span><div class="flowbody"><div class="lb " data-lang="en"><p>Any passage whose similarity score is below 0.72 is dropped. If nothing survives, the service answers &quot;I don&#x27;t know&quot; and never calls the model.</p></div><div class="lb " data-lang="es"><p>Se descarta todo pasaje con score de similitud por debajo de 0,72. Si no sobrevive nada, el servicio contesta &quot;no sé&quot; y nunca llama al modelo.</p></div><span class="anchor" title="source">src/answer.py:31</span></div></li><li><span class="num">5</span><div class="flowbody"><div class="lb " data-lang="en"><p>The survivors are pasted into a prompt template that tells the model to answer only from the given text and to say so if the text does not contain the answer.</p></div><div class="lb " data-lang="es"><p>Los sobrevivientes se pegan en una plantilla de prompt que le dice al modelo que responda solo con el texto dado y que avise si ese texto no tiene la respuesta.</p></div><span class="anchor" title="source">src/answer.py:44</span></div></li><li><span class="num">6</span><div class="flowbody"><div class="lb " data-lang="en"><p>The model&#x27;s reply plus the source page URLs are returned to the caller.</p></div><div class="lb " data-lang="es"><p>La respuesta del modelo más las URLs de las páginas fuente vuelven a quien preguntó.</p></div><span class="anchor" title="source">src/answer.py:58</span></div></li></ol></div>
+  <div class="card"><h3><span class="lb " data-lang="en">Decisions you would not guess from the code</span><span class="lb " data-lang="es">Decisiones que no adivinarías leyendo el código</span></h3><div class="decision"><div class="dhead"><div class="lb choice" data-lang="en"><p>Passages overlap by 150 characters</p></div><div class="lb choice" data-lang="es"><p>Los pasajes se superponen 150 caracteres</p></div><div class="dinstead"><span class="lb " data-lang="en">instead of</span><span class="lb " data-lang="es">en vez de</span> <span class="lb " data-lang="en">clean non-overlapping cuts</span><span class="lb " data-lang="es">cortes limpios sin superposición</span></div></div><div class="lb " data-lang="en"><p>A sentence that answers the question can straddle a cut. Overlap means at least one passage contains it whole.</p></div><div class="lb " data-lang="es"><p>La oración que contesta la pregunta puede quedar partida por un corte. La superposición garantiza que al menos un pasaje la tenga entera.</p></div><span class="anchor" title="source">src/chunker.py:14</span></div><div class="decision"><div class="dhead"><div class="lb choice" data-lang="en"><p>A hard similarity floor of 0.72</p></div><div class="lb choice" data-lang="es"><p>Un piso duro de similitud de 0,72</p></div><div class="dinstead"><span class="lb " data-lang="en">instead of</span><span class="lb " data-lang="es">en vez de</span> <span class="lb " data-lang="en">always passing the top 5</span><span class="lb " data-lang="es">pasar siempre el top 5</span></div></div><div class="lb " data-lang="en"><p>Without it the search always returns its five best matches, even when all five are irrelevant, and the model then invents an answer from unrelated text.</p></div><div class="lb " data-lang="es"><p>Sin él la búsqueda siempre devuelve sus cinco mejores, aunque los cinco sean irrelevantes, y entonces el modelo inventa una respuesta a partir de texto que no viene al caso.</p></div><span class="anchor" title="source">src/answer.py:31</span></div><div class="decision"><div class="dhead"><div class="lb choice" data-lang="en"><p>Postgres with pgvector instead of a dedicated vector database</p></div><div class="lb choice" data-lang="es"><p>Postgres con pgvector en vez de una base vectorial dedicada</p></div><div class="dinstead"><span class="lb " data-lang="en">instead of</span><span class="lb " data-lang="es">en vez de</span> <span class="lb " data-lang="en">Pinecone, Weaviate, or Qdrant</span><span class="lb " data-lang="es">Pinecone, Weaviate o Qdrant</span></div></div><div class="lb " data-lang="en"><p>The team already runs Postgres, backs it up, and knows how to debug it. 4,000 pages is far below the scale where a specialised store pays for its extra operational surface.</p></div><div class="lb " data-lang="es"><p>El equipo ya corre Postgres, lo respalda y sabe debuggearlo. 4.000 páginas está muy por debajo de la escala donde un almacén especializado justifica su superficie operativa extra.</p></div><span class="anchor" title="source">src/store.py:9</span></div></div>
+</section>
+<section id="blank" class="sec open" data-sec="blank">
+  <h2><span class="secnum">01</span><span class="lb " data-lang="en">The blank page</span><span class="lb " data-lang="es">La hoja en blanco</span></h2>
+  <div class="card">
+    <div class="lb " data-lang="en"><p>Before you open anything else: write down, from memory alone, how you think this service answers a question. Do not look at the code. Include the parts you are unsure about and mark them with a question mark — those marks are the most valuable thing on this page, because they are the map of what you are about to learn.</p></div><div class="lb " data-lang="es"><p>Antes de abrir nada más: escribí, solo de memoria, cómo creés que este servicio contesta una pregunta. No mires el código. Incluí las partes de las que no estás seguro y marcalas con un signo de pregunta — esas marcas son lo más valioso de esta página, porque son el mapa de lo que estás por aprender.</p></div>
+    <textarea class="ta" data-key="blank" data-min="60" data-ph-en="Start with &quot;I think it works like this...&quot; and keep going. Mark anything you are unsure of with a ? — those marks are the point." data-ph-es="Arrancá con &quot;creo que funciona así...&quot; y seguí. Marcá con ? todo lo que no tengas seguro — esas marcas son justamente el punto."></textarea>
+    <div class="meter"><span class="wc" data-for="blank">0</span> <span class="lb " data-lang="en">words</span><span class="lb " data-lang="es">palabras</span>
+      <span class="short" data-for="blank"></span></div>
+  </div>
+</section>
+<section id="concepts" class="sec" data-sec="concepts">
+  <h2><span class="secnum">02</span><span class="lb " data-lang="en">The load-bearing ideas</span><span class="lb " data-lang="es">Las ideas que sostienen todo</span></h2>
+  <div class="lockmsg"><div class="lb " data-lang="en"><p>This section unlocks when the work above is done.</p></div><div class="lb " data-lang="es"><p>Esta sección se abre cuando termines lo de arriba.</p></div><button class="btn glass" data-glass="sec:concepts"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button></div>
+  <div class="secbody">
+  <article class="concept" data-cid="retrieve-before-generate" data-banned='["embed", "vector", "semantic", "retrieval", "RAG", "similarity", "index", "corpus"]'>
+    <header class="chead">
+      <span class="cnum">01</span>
+      <div><h3><span class="lb " data-lang="en">Look it up, then answer</span><span class="lb " data-lang="es">Buscar primero, contestar después</span></h3><div class="lb oneliner" data-lang="en"><p>How does a model answer questions about documents it has never read?</p></div><div class="lb oneliner" data-lang="es"><p>¿Cómo contesta un modelo preguntas sobre documentos que nunca leyó?</p></div></div>
+      <span class="badge" data-badge="retrieve-before-generate"></span>
+    </header>
+
+    <div class="stage">
+      <h4><span class="lb " data-lang="en">Your turn</span><span class="lb " data-lang="es">Te toca</span></h4>
+      <div class="lb " data-lang="en"><p>Explain this to a smart 12-year-old. Plain words only.</p></div><div class="lb " data-lang="es"><p>Explicá esto a un chico de 12 años. Solo palabras comunes.</p></div>
+      <textarea class="ta" data-key="retrieve-before-generate.exp" data-min="40" data-banned-check="1" data-ph-en="When someone asks a question, the program first..." data-ph-es="Cuando alguien hace una pregunta, el programa primero..."></textarea>
+      <div class="meter"><span class="wc" data-for="retrieve-before-generate.exp">0</span> <span class="lb " data-lang="en">words</span><span class="lb " data-lang="es">palabras</span>
+        <span class="short" data-for="retrieve-before-generate.exp"></span></div>
+      <div class="jargon" data-for="retrieve-before-generate.exp"></div>
+      <button class="btn" data-submit="retrieve-before-generate.exp"><span class="lb " data-lang="en">Submit and compare</span><span class="lb " data-lang="es">Enviar y comparar</span></button>
+      <button class="btn glass" data-glass="retrieve-before-generate"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button>
+      <div class="revealbox" id="rev-retrieve-before-generate-exp">
+        <h4><span class="lb " data-lang="en">The reference explanation</span><span class="lb " data-lang="es">La explicación de referencia</span></h4>
+        <div class="lb " data-lang="en"><p>Imagine a very sharp student who has to take an exam on a library she has never visited. You have two options. You can make her memorise all 4,000 books, which takes forever and she will still get things wrong. Or you can let her walk in with the exam question, find the three pages that talk about it, and answer with those pages open in front of her.</p><p>This service does the second thing. The model is never taught the help pages. Every time a question comes in, the service finds the handful of passages that are about that question and hands them over with the question. The model&#x27;s job shrinks from *knowing everything* to *reading five short passages and writing a clear answer*, which is something it is very good at.</p></div><div class="lb " data-lang="es"><p>Imaginate una estudiante muy capaz que tiene que rendir un examen sobre una biblioteca que nunca pisó. Tenés dos opciones. Podés hacerla memorizar los 4.000 libros, que tarda una eternidad y aun así se va a equivocar. O podés dejarla entrar con la pregunta del examen, buscar las tres páginas que hablan del tema y contestar con esas páginas abiertas adelante.</p><p>Este servicio hace lo segundo. Al modelo nunca se le enseñan las páginas de ayuda. Cada vez que llega una pregunta, el servicio encuentra el puñado de pasajes que hablan de eso y se los pasa junto con la pregunta. El trabajo del modelo se achica de *saber todo* a *leer cinco pasajes cortos y escribir una respuesta clara*, que es algo que hace muy bien.</p></div>
+        <div class="analogyzone">
+          <h4><span class="lb " data-lang="en">Now forge your own analogy</span><span class="lb " data-lang="es">Ahora forjá tu propia analogía</span></h4>
+          <div class="lb " data-lang="en"><p>Finish the sentence: &quot;It is like...&quot; — and then say where your analogy breaks down.</p></div><div class="lb " data-lang="es"><p>Completá la frase: &quot;Es como...&quot; — y después decí dónde se rompe tu analogía.</p></div>
+          <textarea class="ta small" data-key="retrieve-before-generate.ana" data-min="15" data-ph-en="It is like... and it breaks down when..." data-ph-es="Es como... y se rompe cuando..."></textarea>
+          <button class="btn ghost" data-reveal="retrieve-before-generate.ana"><span class="lb " data-lang="en">Reference analogy</span><span class="lb " data-lang="es">Analogía de referencia</span></button>
+          <div class="revealbox" id="rev-retrieve-before-generate-ana">
+            <div class="lb " data-lang="en"><p>It is an open-book exam with a very fast research assistant. The assistant cannot answer anything herself — all she does is sprint to the shelf and put the right three pages in front of you before you start writing.</p></div><div class="lb " data-lang="es"><p>Es un examen a libro abierto con una asistente de investigación rapidísima. Ella no puede contestar nada por su cuenta — lo único que hace es correr al estante y dejarte las tres páginas correctas adelante antes de que empieces a escribir.</p></div>
+            <div class="breaks"><b><span class="lb " data-lang="en">Where it breaks down</span><span class="lb " data-lang="es">Dónde se rompe</span></b><div class="lb " data-lang="en"><p>It breaks where the assistant&#x27;s judgement matters. A human assistant who brings back three irrelevant pages will say &quot;I couldn&#x27;t find anything useful&quot;. This one hands over the three closest matches with total confidence whether or not they are relevant — which is exactly why the 0.72 floor had to be added.</p></div><div class="lb " data-lang="es"><p>Se rompe donde importa el criterio de la asistente. Una asistente humana que vuelve con tres páginas irrelevantes te dice &quot;no encontré nada útil&quot;. Esta te entrega los tres más cercanos con total seguridad, sean relevantes o no — que es justamente por qué hubo que agregar el piso de 0,72.</p></div></div>
+          </div>
+        </div>
+        <div class="gapzone">
+          <h4><span class="lb " data-lang="en">Gap hunt</span><span class="lb " data-lang="es">Caza de lagunas</span></h4>
+          <div class="hint"><div class="lb " data-lang="en"><p>Answer from your head first. The source anchor is there so you can verify, not so you can copy.</p></div><div class="lb " data-lang="es"><p>Contestá de memoria primero. El ancla al código está para que verifiques, no para que copies.</p></div></div>
+          
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>The service never trains the model on the help pages. Name two concrete things this buys you when a help page is edited on a Tuesday afternoon.</p></div><div class="lb " data-lang="es"><p>El servicio nunca entrena el modelo con las páginas de ayuda. Nombrá dos cosas concretas que ganás con eso cuando editan una página un martes a la tarde.</p></div></div>
+        <textarea class="ta small" data-key="retrieve-before-generate.gap0" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="retrieve-before-generate.gap0"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-retrieve-before-generate-gap0"><div class="lb " data-lang="en"><p>The edit is live as soon as ingestion reruns for that page — minutes, not a training cycle — and it costs one embedding call rather than a fine-tune. You also get deletion for free: removing a page removes its passages, whereas a trained model cannot forget on request.</p></div><div class="lb " data-lang="es"><p>El cambio está vivo apenas se reejecuta la ingesta de esa página — minutos, no un ciclo de entrenamiento — y cuesta una llamada de embedding en vez de un fine-tune. Además el borrado sale gratis: eliminar una página elimina sus pasajes, mientras que un modelo entrenado no puede olvidar a pedido.</p></div><span class="anchor" title="source">src/ingest.py:28</span></div>
+      </div>
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>Delete the search step and paste all 4,000 pages into the prompt instead. Name the two separate things that break.</p></div><div class="lb " data-lang="es"><p>Borrá el paso de búsqueda y pegá las 4.000 páginas en el prompt. Nombrá las dos cosas distintas que se rompen.</p></div></div>
+        <textarea class="ta small" data-key="retrieve-before-generate.gap1" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="retrieve-before-generate.gap1"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-retrieve-before-generate-gap1"><div class="lb " data-lang="en"><p>First, it does not fit — the request exceeds the model&#x27;s context limit and fails outright. Second, even if it fit, cost and latency scale with every page on every question, and answer quality *drops*, because the relevant sentence is buried in millions of irrelevant tokens.</p></div><div class="lb " data-lang="es"><p>Primero, no entra — el request supera el límite de contexto del modelo y falla directamente. Segundo, aunque entrara, el costo y la latencia escalan con cada página en cada pregunta, y la calidad *baja*, porque la oración relevante queda enterrada entre millones de tokens irrelevantes.</p></div><span class="anchor" title="source">src/answer.py:44</span></div>
+      </div>
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>A user asks something the help pages genuinely do not cover. Walk through what happens, line by line, and say where it stops.</p></div><div class="lb " data-lang="es"><p>Un usuario pregunta algo que las páginas realmente no cubren. Recorré qué pasa, línea por línea, y decí dónde se frena.</p></div></div>
+        <textarea class="ta small" data-key="retrieve-before-generate.gap2" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="retrieve-before-generate.gap2"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-retrieve-before-generate-gap2"><div class="lb " data-lang="en"><p>Search still returns five passages — it always returns its best guesses. Every score falls under 0.72, the filter empties the list, and the code returns a fixed &quot;I don&#x27;t know&quot; without ever calling the model. That early return is the only thing standing between the user and a confident fabrication.</p></div><div class="lb " data-lang="es"><p>La búsqueda igual devuelve cinco pasajes — siempre devuelve sus mejores tentativas. Todos los scores caen por debajo de 0,72, el filtro vacía la lista y el código devuelve un &quot;no sé&quot; fijo sin llamar nunca al modelo. Ese return temprano es lo único que separa al usuario de una fabricación dicha con total seguridad.</p></div><span class="anchor" title="source">src/answer.py:31</span></div>
+      </div>
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>Why does the response include source URLs? Give a reason that is about the system, not about being polite to users.</p></div><div class="lb " data-lang="es"><p>¿Por qué la respuesta incluye las URLs de las fuentes? Dá una razón sobre el sistema, no sobre ser amable con el usuario.</p></div></div>
+        <textarea class="ta small" data-key="retrieve-before-generate.gap3" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="retrieve-before-generate.gap3"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-retrieve-before-generate-gap3"><div class="lb " data-lang="en"><p>They make the system debuggable. When an answer is wrong you need to know whether search brought back the wrong passages or the model misread the right ones — those two failures have completely different fixes, and without the sources you cannot tell them apart.</p></div><div class="lb " data-lang="es"><p>Hacen el sistema debuggeable. Cuando una respuesta está mal necesitás saber si la búsqueda trajo los pasajes equivocados o si el modelo leyó mal los correctos — esas dos fallas se arreglan de maneras completamente distintas, y sin las fuentes no las podés distinguir.</p></div><span class="anchor" title="source">src/answer.py:58</span></div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seniorzone" data-senior="retrieve-before-generate">
+      <div class="srow"><b><span class="lb " data-lang="en">Tradeoff taken</span><span class="lb " data-lang="es">Trade-off asumido</span></b><div class="lb " data-lang="en"><p>You trade a training cost you pay once for a search cost you pay on every single request, and you accept that answer quality is now capped by retrieval quality. In exchange you get freshness measured in minutes, per-document deletion, and citations. For a corpus that changes weekly, that is the right side of the trade; for a static corpus queried millions of times a day it is arguable.</p></div><div class="lb " data-lang="es"><p>Cambiás un costo de entrenamiento que pagás una vez por un costo de búsqueda que pagás en cada request, y aceptás que la calidad de la respuesta queda limitada por la calidad de la búsqueda. A cambio obtenés frescura medida en minutos, borrado por documento y citas. Para un corpus que cambia todas las semanas es el lado correcto del trade; para un corpus estático con millones de consultas diarias es discutible.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Failure modes</span><span class="lb " data-lang="es">Modos de falla</span></b><div class="fm"><div class="fmhead"><div class="lb mode" data-lang="en"><p>Retrieval miss on vocabulary mismatch</p></div><div class="lb mode" data-lang="es"><p>Fallo de búsqueda por vocabulario distinto</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Looks like</span><span class="lb " data-lang="es">Se ve así</span></b><div class="lb " data-lang="en"><p>The answer exists in the corpus but the service says it does not know. Users report it as &quot;the bot is dumb&quot;.</p></div><div class="lb " data-lang="es"><p>La respuesta existe en el corpus pero el servicio dice que no sabe. Los usuarios lo reportan como &quot;el bot es tonto&quot;.</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Mitigation</span><span class="lb " data-lang="es">Mitigación</span></b><div class="lb " data-lang="en"><p>Log every below-floor query. That log is a ranked list of exactly what to fix — usually by adding a hybrid keyword search alongside the vector search rather than by lowering the floor.</p></div><div class="lb " data-lang="es"><p>Loguear toda consulta que quede bajo el piso. Ese log es una lista priorizada de qué arreglar — normalmente agregando búsqueda por palabra clave en paralelo a la vectorial, no bajando el piso.</p></div></div></div><div class="fm"><div class="fmhead"><div class="lb mode" data-lang="en"><p>Confidently wrong answer from plausible-but-wrong passages</p></div><div class="lb mode" data-lang="es"><p>Respuesta segura pero equivocada desde pasajes plausibles pero incorrectos</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Looks like</span><span class="lb " data-lang="es">Se ve así</span></b><div class="lb " data-lang="en"><p>Fluent answer, real citations, wrong content — typically when two help pages describe near-identical flows for different products.</p></div><div class="lb " data-lang="es"><p>Respuesta fluida, citas reales, contenido equivocado — típicamente cuando dos páginas describen flujos casi idénticos para productos distintos.</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Mitigation</span><span class="lb " data-lang="es">Mitigación</span></b><div class="lb " data-lang="en"><p>Filter by product metadata before the similarity search rather than hoping the vectors separate them. Metadata filters are cheap and exact; vectors are neither.</p></div><div class="lb " data-lang="es"><p>Filtrar por metadata de producto antes de la búsqueda por similitud en vez de esperar que los vectores los separen. Los filtros de metadata son baratos y exactos; los vectores no son ninguna de las dos cosas.</p></div></div></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Cost and complexity</span><span class="lb " data-lang="es">Costo y complejidad</span></b><div class="lb " data-lang="en"><p>Two model calls per question (one embedding, one generation) plus one indexed database query. The embedding call is roughly a thousandth of the generation cost and can be cached by exact question text, which in a support tool with repeated questions is a real win. Ingestion is O(pages) and runs offline.</p></div><div class="lb " data-lang="es"><p>Dos llamadas al modelo por pregunta (una de embedding, una de generación) más una consulta indexada a la base. La llamada de embedding cuesta cerca de una milésima de la de generación y se puede cachear por texto exacto de la pregunta, que en una herramienta de soporte con preguntas repetidas es una ganancia real. La ingesta es O(páginas) y corre offline.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">At 100x</span><span class="lb " data-lang="es">A 100x</span></b><div class="lb " data-lang="en"><p>At 4,000 pages an exact scan over pgvector is fine. Past roughly a million passages you need an approximate index (HNSW or IVFFlat), and the moment you add one you have accepted recall below 100% — so that is the point where the below-floor log stops being a nice-to-have and becomes your primary quality signal.</p></div><div class="lb " data-lang="es"><p>Con 4.000 páginas un escaneo exacto sobre pgvector está bien. Pasado el millón de pasajes necesitás un índice aproximado (HNSW o IVFFlat), y en el momento en que agregás uno aceptaste recall por debajo del 100% — así que ahí es donde el log de consultas bajo el piso deja de ser un lujo y pasa a ser tu señal principal de calidad.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Alternatives not taken</span><span class="lb " data-lang="es">Alternativas descartadas</span></b><div class="alt"><div class="lb optname" data-lang="en"><p>Fine-tune a model on the help pages</p></div><div class="lb optname" data-lang="es"><p>Hacer fine-tune de un modelo con las páginas de ayuda</p></div><div class="fmrow"><b><span class="lb " data-lang="en">Why not</span><span class="lb " data-lang="es">Por qué no</span></b><div class="lb " data-lang="en"><p>It cannot cite, cannot forget a deleted page, and goes stale the moment anyone edits documentation. It also fails silently: a stale fine-tune sounds exactly as confident as a fresh one.</p></div><div class="lb " data-lang="es"><p>No puede citar, no puede olvidar una página borrada y queda obsoleto apenas alguien edita la documentación. Además falla en silencio: un fine-tune viejo suena exactamente igual de seguro que uno fresco.</p></div></div></div><div class="alt"><div class="lb optname" data-lang="en"><p>Plain keyword search feeding the same prompt</p></div><div class="lb optname" data-lang="es"><p>Búsqueda por palabra clave común alimentando el mismo prompt</p></div><div class="fmrow"><b><span class="lb " data-lang="en">Why not</span><span class="lb " data-lang="es">Por qué no</span></b><div class="lb " data-lang="en"><p>It is cheaper and genuinely better for exact identifiers and error codes — which is why the honest end state here is both, not one. It was skipped in v1 only because support questions are paraphrase-heavy, and that is a decision worth revisiting with the below-floor log in hand.</p></div><div class="lb " data-lang="es"><p>Es más barata y de verdad mejor para identificadores exactos y códigos de error — por eso el final honesto acá es tener las dos, no una. Se salteó en la v1 solo porque las preguntas de soporte son muy parafraseadas, y es una decisión que vale la pena revisar con el log de consultas bajo el piso en la mano.</p></div></div></div></div>
+    </div>
+  </article>
+  <article class="concept" data-cid="chunking" data-banned='["chunk", "chunking", "token", "embedding", "vector", "granularity", "overlap window"]'>
+    <header class="chead">
+      <span class="cnum">02</span>
+      <div><h3><span class="lb " data-lang="en">Cutting pages into passages</span><span class="lb " data-lang="es">Cortar páginas en pasajes</span></h3><div class="lb oneliner" data-lang="en"><p>Why does a whole page make a bad unit of search, and what decides where the cuts go?</p></div><div class="lb oneliner" data-lang="es"><p>¿Por qué una página entera es una mala unidad de búsqueda y qué decide dónde van los cortes?</p></div></div>
+      <span class="badge" data-badge="chunking"></span>
+    </header>
+
+    <div class="stage">
+      <h4><span class="lb " data-lang="en">Your turn</span><span class="lb " data-lang="es">Te toca</span></h4>
+      <div class="lb " data-lang="en"><p>Explain this to a smart 12-year-old. Plain words only.</p></div><div class="lb " data-lang="es"><p>Explicá esto a un chico de 12 años. Solo palabras comunes.</p></div>
+      <textarea class="ta" data-key="chunking.exp" data-min="40" data-banned-check="1" data-ph-en="When someone asks a question, the program first..." data-ph-es="Cuando alguien hace una pregunta, el programa primero..."></textarea>
+      <div class="meter"><span class="wc" data-for="chunking.exp">0</span> <span class="lb " data-lang="en">words</span><span class="lb " data-lang="es">palabras</span>
+        <span class="short" data-for="chunking.exp"></span></div>
+      <div class="jargon" data-for="chunking.exp"></div>
+      <button class="btn" data-submit="chunking.exp"><span class="lb " data-lang="en">Submit and compare</span><span class="lb " data-lang="es">Enviar y comparar</span></button>
+      <button class="btn glass" data-glass="chunking"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button>
+      <div class="revealbox" id="rev-chunking-exp">
+        <h4><span class="lb " data-lang="en">The reference explanation</span><span class="lb " data-lang="es">La explicación de referencia</span></h4>
+        <div class="lb " data-lang="en"><p>A help page can be six screens long and cover eight unrelated things: how to log in, how to reset a password, what the error codes mean, and so on. If you file the whole page as one item, then its one summary has to stand for all eight topics at once — and a summary of eight things is a good match for none of them.</p><p>So before filing, each page is cut into pieces of roughly a paragraph or two. Each piece is about one thing, so its summary is sharp. The cuts overlap a little, because the sentence that actually answers a question has a habit of landing exactly where you made the cut, and the overlap guarantees at least one piece still contains it whole.</p></div><div class="lb " data-lang="es"><p>Una página de ayuda puede tener seis pantallas de largo y cubrir ocho cosas que no tienen nada que ver: cómo entrar, cómo resetear una contraseña, qué significan los códigos de error, etcétera. Si archivás la página entera como un solo ítem, su único resumen tiene que representar los ocho temas a la vez — y un resumen de ocho cosas no coincide bien con ninguna.</p><p>Así que antes de archivar, cada página se corta en pedazos de más o menos uno o dos párrafos. Cada pedazo habla de una sola cosa, entonces su resumen es filoso. Los cortes se superponen un poco, porque la oración que realmente contesta la pregunta tiene la costumbre de caer justo donde hiciste el corte, y la superposición garantiza que al menos un pedazo la siga teniendo entera.</p></div>
+        <div class="analogyzone">
+          <h4><span class="lb " data-lang="en">Now forge your own analogy</span><span class="lb " data-lang="es">Ahora forjá tu propia analogía</span></h4>
+          <div class="lb " data-lang="en"><p>Finish the sentence: &quot;It is like...&quot; — and then say where your analogy breaks down.</p></div><div class="lb " data-lang="es"><p>Completá la frase: &quot;Es como...&quot; — y después decí dónde se rompe tu analogía.</p></div>
+          <textarea class="ta small" data-key="chunking.ana" data-min="15" data-ph-en="It is like... and it breaks down when..." data-ph-es="Es como... y se rompe cuando..."></textarea>
+          <button class="btn ghost" data-reveal="chunking.ana"><span class="lb " data-lang="en">Reference analogy</span><span class="lb " data-lang="es">Analogía de referencia</span></button>
+          <div class="revealbox" id="rev-chunking-ana">
+            <div class="lb " data-lang="en"><p>It is the difference between filing a whole newspaper under one label and filing each article separately. Ask for &quot;yesterday&#x27;s football result&quot; and the newspaper-shaped file gives you 40 pages of everything; the article-shaped file gives you the six paragraphs you wanted.</p></div><div class="lb " data-lang="es"><p>Es la diferencia entre archivar un diario entero bajo una etiqueta y archivar cada artículo por separado. Pedí &quot;el resultado del fútbol de ayer&quot; y el archivo con forma de diario te da 40 páginas de todo; el archivo con forma de artículo te da los seis párrafos que querías.</p></div>
+            <div class="breaks"><b><span class="lb " data-lang="en">Where it breaks down</span><span class="lb " data-lang="es">Dónde se rompe</span></b><div class="lb " data-lang="en"><p>Articles have natural edges and passages do not — the cutter here counts characters, so it will happily slice a numbered procedure in half between step 3 and step 4. That is a real weakness of this implementation, not of the idea.</p></div><div class="lb " data-lang="es"><p>Los artículos tienen bordes naturales y los pasajes no — el cortador acá cuenta caracteres, así que va a partir tranquilamente un procedimiento numerado entre el paso 3 y el paso 4. Esa es una debilidad real de esta implementación, no de la idea.</p></div></div>
+          </div>
+        </div>
+        <div class="gapzone">
+          <h4><span class="lb " data-lang="en">Gap hunt</span><span class="lb " data-lang="es">Caza de lagunas</span></h4>
+          <div class="hint"><div class="lb " data-lang="en"><p>Answer from your head first. The source anchor is there so you can verify, not so you can copy.</p></div><div class="lb " data-lang="es"><p>Contestá de memoria primero. El ancla al código está para que verifiques, no para que copies.</p></div></div>
+          
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>The overlap is 150 characters. What specifically goes wrong at 0, and what specifically goes wrong at 700?</p></div><div class="lb " data-lang="es"><p>La superposición es de 150 caracteres. ¿Qué se rompe concretamente en 0 y qué se rompe concretamente en 700?</p></div></div>
+        <textarea class="ta small" data-key="chunking.gap0" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="chunking.gap0"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-chunking-gap0"><div class="lb " data-lang="en"><p>At 0, a sentence split across a cut appears in neither piece as a complete thought, so the passage that should have matched no longer does. At 700 — nearly the passage size — almost every sentence is stored two or three times, which inflates storage and search cost and floods the top-5 with near-duplicates of the same text, crowding out genuinely different passages.</p></div><div class="lb " data-lang="es"><p>En 0, una oración partida por un corte no aparece entera en ningún pedazo, así que el pasaje que debería haber coincidido ya no coincide. En 700 — casi el tamaño del pasaje — casi toda oración queda guardada dos o tres veces, lo que infla el almacenamiento y el costo de búsqueda e inunda el top-5 con casi-duplicados del mismo texto, desplazando pasajes que sí son distintos.</p></div><span class="anchor" title="source">src/chunker.py:14</span></div>
+      </div>
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>The cutter counts characters, not sentences. Construct an input where that produces a passage nobody could answer from.</p></div><div class="lb " data-lang="es"><p>El cortador cuenta caracteres, no oraciones. Construí un input donde eso produzca un pasaje del que nadie podría contestar.</p></div></div>
+        <textarea class="ta small" data-key="chunking.gap1" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="chunking.gap1"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-chunking-gap1"><div class="lb " data-lang="en"><p>Any numbered procedure longer than 800 characters: the cut lands mid-procedure and the second piece begins &quot;4. Click Confirm.&quot; with no indication of what is being confirmed. It will still match questions about confirming things, and it will still be useless.</p></div><div class="lb " data-lang="es"><p>Cualquier procedimiento numerado de más de 800 caracteres: el corte cae en el medio y el segundo pedazo arranca con &quot;4. Hacé clic en Confirmar.&quot; sin ninguna pista de qué se está confirmando. Va a seguir coincidiendo con preguntas sobre confirmar cosas y va a seguir siendo inútil.</p></div><span class="anchor" title="source">src/chunker.py:22</span></div>
+      </div>
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>Each stored passage keeps its source page URL alongside the text. Why is that stored at cut time rather than looked up later?</p></div><div class="lb " data-lang="es"><p>Cada pasaje guardado conserva la URL de su página fuente junto al texto. ¿Por qué se guarda en el momento del corte y no se busca después?</p></div></div>
+        <textarea class="ta small" data-key="chunking.gap2" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="chunking.gap2"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-chunking-gap2"><div class="lb " data-lang="en"><p>After cutting there is no way back — a passage is just text, with nothing in it that identifies which page it came from. If the link is not attached at the moment of the cut, citations become impossible and the whole debugging story from the previous concept collapses.</p></div><div class="lb " data-lang="es"><p>Después de cortar no hay vuelta atrás — un pasaje es solo texto, sin nada adentro que identifique de qué página vino. Si el vínculo no se adjunta en el momento del corte, las citas se vuelven imposibles y toda la historia de debugging del concepto anterior se derrumba.</p></div><span class="anchor" title="source">src/chunker.py:31</span></div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seniorzone" data-senior="chunking">
+      <div class="srow"><b><span class="lb " data-lang="en">Tradeoff taken</span><span class="lb " data-lang="es">Trade-off asumido</span></b><div class="lb " data-lang="en"><p>Fixed-size character cutting is chosen for being dead simple, deterministic, and format-agnostic. The price is that it is blind to document structure, so it will cut inside tables, code blocks, and numbered procedures. That price is acceptable for prose help pages and unacceptable for API reference docs.</p></div><div class="lb " data-lang="es"><p>El corte por cantidad fija de caracteres se elige por ser simplísimo, determinista y agnóstico al formato. El precio es que es ciego a la estructura del documento, así que corta adentro de tablas, bloques de código y procedimientos numerados. Ese precio es aceptable para páginas de ayuda en prosa e inaceptable para documentación de referencia de una API.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Failure modes</span><span class="lb " data-lang="es">Modos de falla</span></b><div class="fm"><div class="fmhead"><div class="lb mode" data-lang="en"><p>Orphaned procedure steps</p></div><div class="lb mode" data-lang="es"><p>Pasos de procedimiento huérfanos</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Looks like</span><span class="lb " data-lang="es">Se ve así</span></b><div class="lb " data-lang="en"><p>Answers that confidently start at step 4, or that describe a UI action with no context.</p></div><div class="lb " data-lang="es"><p>Respuestas que arrancan seguras en el paso 4, o que describen una acción de UI sin contexto.</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Mitigation</span><span class="lb " data-lang="es">Mitigación</span></b><div class="lb " data-lang="en"><p>Split on structural boundaries first (headings, list blocks) and only fall back to character counting inside a block.</p></div><div class="lb " data-lang="es"><p>Cortar primero en límites estructurales (encabezados, bloques de lista) y recién dentro de un bloque volver al conteo de caracteres.</p></div></div></div><div class="fm"><div class="fmhead"><div class="lb mode" data-lang="en"><p>Re-ingestion drift</p></div><div class="lb mode" data-lang="es"><p>Deriva en la reingesta</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Looks like</span><span class="lb " data-lang="es">Se ve así</span></b><div class="lb " data-lang="en"><p>Editing one paragraph of a page changes every passage boundary after it, so the store fills with duplicate near-identical passages from old runs.</p></div><div class="lb " data-lang="es"><p>Editar un párrafo de una página corre todos los límites de pasaje posteriores, así que el almacén se llena de pasajes casi idénticos duplicados de corridas viejas.</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Mitigation</span><span class="lb " data-lang="es">Mitigación</span></b><div class="lb " data-lang="en"><p>Delete by source URL before re-inserting, which is exactly what makes storing that URL non-negotiable.</p></div><div class="lb " data-lang="es"><p>Borrar por URL de origen antes de reinsertar, que es exactamente lo que vuelve innegociable guardar esa URL.</p></div></div></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Cost and complexity</span><span class="lb " data-lang="es">Costo y complejidad</span></b><div class="lb " data-lang="en"><p>O(characters) and negligible next to the embedding calls it feeds. Passage size is the real cost lever: halving it doubles the number of embedding calls, doubles rows, and makes each retrieved passage carry less context into the prompt.</p></div><div class="lb " data-lang="es"><p>O(caracteres) y despreciable al lado de las llamadas de embedding que alimenta. El tamaño del pasaje es la verdadera palanca de costo: reducirlo a la mitad duplica las llamadas de embedding, duplica las filas y hace que cada pasaje recuperado lleve menos contexto al prompt.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">At 100x</span><span class="lb " data-lang="es">A 100x</span></b><div class="lb " data-lang="en"><p>The knob that actually moves answer quality is passage size, and it is corpus-specific — 800 characters suits prose, 200 suits FAQ pairs, 2,000 suits legal text. Tune it against a held-out question set, never by intuition, and re-tune whenever the corpus changes character.</p></div><div class="lb " data-lang="es"><p>La perilla que de verdad mueve la calidad de las respuestas es el tamaño del pasaje, y depende del corpus — 800 caracteres le van bien a la prosa, 200 a pares de FAQ, 2.000 a texto legal. Ajustalo contra un set de preguntas reservado, nunca por intuición, y reajustalo cada vez que el corpus cambie de carácter.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Alternatives not taken</span><span class="lb " data-lang="es">Alternativas descartadas</span></b><div class="alt"><div class="lb optname" data-lang="en"><p>Structure-aware splitting on Markdown headings</p></div><div class="lb optname" data-lang="es"><p>Corte consciente de la estructura por encabezados Markdown</p></div><div class="fmrow"><b><span class="lb " data-lang="en">Why not</span><span class="lb " data-lang="es">Por qué no</span></b><div class="lb " data-lang="en"><p>Strictly better for this corpus and the obvious v2. It was skipped in v1 only because the source pages are HTML of inconsistent quality and the heading extraction is its own small project.</p></div><div class="lb " data-lang="es"><p>Estrictamente mejor para este corpus y la v2 obvia. Se salteó en la v1 solo porque las páginas fuente son HTML de calidad despareja y extraer los encabezados es un proyecto chico en sí mismo.</p></div></div></div></div>
+    </div>
+  </article>
+  <article class="concept" data-cid="similarity-floor" data-banned='["threshold", "cosine", "similarity", "score", "vector", "embedding", "confidence"]'>
+    <header class="chead">
+      <span class="cnum">03</span>
+      <div><h3><span class="lb " data-lang="en">The floor that lets it say &quot;I don&#x27;t know&quot;</span><span class="lb " data-lang="es">El piso que le permite decir &quot;no sé&quot;</span></h3><div class="lb oneliner" data-lang="en"><p>Search always returns its five best guesses. What stops the system from answering from five bad ones?</p></div><div class="lb oneliner" data-lang="es"><p>La búsqueda siempre devuelve sus cinco mejores tentativas. ¿Qué evita que el sistema conteste a partir de cinco malas?</p></div></div>
+      <span class="badge" data-badge="similarity-floor"></span>
+    </header>
+
+    <div class="stage">
+      <h4><span class="lb " data-lang="en">Your turn</span><span class="lb " data-lang="es">Te toca</span></h4>
+      <div class="lb " data-lang="en"><p>Explain this to a smart 12-year-old. Plain words only.</p></div><div class="lb " data-lang="es"><p>Explicá esto a un chico de 12 años. Solo palabras comunes.</p></div>
+      <textarea class="ta" data-key="similarity-floor.exp" data-min="40" data-banned-check="1" data-ph-en="When someone asks a question, the program first..." data-ph-es="Cuando alguien hace una pregunta, el programa primero..."></textarea>
+      <div class="meter"><span class="wc" data-for="similarity-floor.exp">0</span> <span class="lb " data-lang="en">words</span><span class="lb " data-lang="es">palabras</span>
+        <span class="short" data-for="similarity-floor.exp"></span></div>
+      <div class="jargon" data-for="similarity-floor.exp"></div>
+      <button class="btn" data-submit="similarity-floor.exp"><span class="lb " data-lang="en">Submit and compare</span><span class="lb " data-lang="es">Enviar y comparar</span></button>
+      <button class="btn glass" data-glass="similarity-floor"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button>
+      <div class="revealbox" id="rev-similarity-floor-exp">
+        <h4><span class="lb " data-lang="en">The reference explanation</span><span class="lb " data-lang="es">La explicación de referencia</span></h4>
+        <div class="lb " data-lang="en"><p>The search step has no idea whether it did a good job. Ask it for the five closest passages to &quot;how do I reset a password&quot; and it returns five. Ask it the same for &quot;what is the airspeed of a swallow&quot; and it *also* returns five — the five least-unrelated passages it has, because five is what you asked for and it has no way to return &quot;nothing here fits&quot;.</p><p>So the system measures how close each returned passage actually is, on a scale where 1 means &quot;about the same thing&quot; and 0 means &quot;nothing in common&quot;, and throws away everything under 0.72. When that leaves nothing, the service stops right there and says it does not know — it never even asks the model. That refusal is a feature, and it is the difference between a tool people trust and one they learn to double-check.</p></div><div class="lb " data-lang="es"><p>El paso de búsqueda no tiene idea de si hizo un buen trabajo. Pedile los cinco pasajes más cercanos a &quot;cómo reseteo una contraseña&quot; y devuelve cinco. Pedile lo mismo para &quot;cuál es la velocidad de vuelo de una golondrina&quot; y *también* devuelve cinco — los cinco menos irrelevantes que tiene, porque cinco es lo que pediste y no tiene forma de devolver &quot;acá no hay nada que sirva&quot;.</p><p>Entonces el sistema mide qué tan cerca está realmente cada pasaje devuelto, en una escala donde 1 significa &quot;habla de lo mismo&quot; y 0 significa &quot;no tienen nada en común&quot;, y descarta todo lo que esté por debajo de 0,72. Cuando eso no deja nada, el servicio frena ahí y dice que no sabe — ni siquiera le pregunta al modelo. Esa negativa es una función, y es la diferencia entre una herramienta en la que la gente confía y una que aprenden a verificar dos veces.</p></div>
+        <div class="analogyzone">
+          <h4><span class="lb " data-lang="en">Now forge your own analogy</span><span class="lb " data-lang="es">Ahora forjá tu propia analogía</span></h4>
+          <div class="lb " data-lang="en"><p>Finish the sentence: &quot;It is like...&quot; — and then say where your analogy breaks down.</p></div><div class="lb " data-lang="es"><p>Completá la frase: &quot;Es como...&quot; — y después decí dónde se rompe tu analogía.</p></div>
+          <textarea class="ta small" data-key="similarity-floor.ana" data-min="15" data-ph-en="It is like... and it breaks down when..." data-ph-es="Es como... y se rompe cuando..."></textarea>
+          <button class="btn ghost" data-reveal="similarity-floor.ana"><span class="lb " data-lang="en">Reference analogy</span><span class="lb " data-lang="es">Analogía de referencia</span></button>
+          <div class="revealbox" id="rev-similarity-floor-ana">
+            <div class="lb " data-lang="en"><p>It is the difference between a librarian who says &quot;we don&#x27;t have anything on that&quot; and one who hands you the three books that were physically nearest to where the right book would have been.</p></div><div class="lb " data-lang="es"><p>Es la diferencia entre un bibliotecario que dice &quot;no tenemos nada sobre eso&quot; y uno que te entrega los tres libros que estaban físicamente más cerca de donde habría estado el libro correcto.</p></div>
+            <div class="breaks"><b><span class="lb " data-lang="en">Where it breaks down</span><span class="lb " data-lang="es">Dónde se rompe</span></b><div class="lb " data-lang="en"><p>A librarian knows the difference between &quot;we don&#x27;t have it&quot; and &quot;I couldn&#x27;t find it&quot;. This floor cannot tell those apart either — it only sees a number, so a badly-worded question and a genuinely uncovered topic produce the identical refusal.</p></div><div class="lb " data-lang="es"><p>Un bibliotecario distingue entre &quot;no lo tenemos&quot; y &quot;no lo pude encontrar&quot;. Este piso tampoco puede distinguirlos — solo ve un número, así que una pregunta mal formulada y un tema realmente no cubierto producen la misma negativa idéntica.</p></div></div>
+          </div>
+        </div>
+        <div class="gapzone">
+          <h4><span class="lb " data-lang="en">Gap hunt</span><span class="lb " data-lang="es">Caza de lagunas</span></h4>
+          <div class="hint"><div class="lb " data-lang="en"><p>Answer from your head first. The source anchor is there so you can verify, not so you can copy.</p></div><div class="lb " data-lang="es"><p>Contestá de memoria primero. El ancla al código está para que verifiques, no para que copies.</p></div></div>
+          
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>The number is 0.72. Describe the user-visible behaviour at 0.30 and at 0.95, and say which of the two is more dangerous.</p></div><div class="lb " data-lang="es"><p>El número es 0,72. Describí el comportamiento visible para el usuario en 0,30 y en 0,95, y decí cuál de los dos es más peligroso.</p></div></div>
+        <textarea class="ta small" data-key="similarity-floor.gap0" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="similarity-floor.gap0"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-similarity-floor-gap0"><div class="lb " data-lang="en"><p>At 0.30 almost everything passes, the model receives loosely related text on nearly every question, and it produces fluent answers grounded in the wrong passages. At 0.95 almost nothing passes and the service says &quot;I don&#x27;t know&quot; to questions it can plainly answer. 0.30 is far more dangerous: a system that refuses is annoying and visible, while a system that is confidently wrong is trusted and invisible.</p></div><div class="lb " data-lang="es"><p>En 0,30 pasa casi todo, el modelo recibe texto vagamente relacionado en casi toda pregunta y produce respuestas fluidas apoyadas en los pasajes equivocados. En 0,95 casi no pasa nada y el servicio dice &quot;no sé&quot; a preguntas que puede contestar de sobra. 0,30 es mucho más peligroso: un sistema que se niega es molesto y visible, mientras que uno que se equivoca con seguridad genera confianza y es invisible.</p></div><span class="anchor" title="source">src/answer.py:31</span></div>
+      </div>
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>Where did 0.72 come from, and what would you need in order to change it responsibly?</p></div><div class="lb " data-lang="es"><p>¿De dónde salió 0,72 y qué necesitarías para cambiarlo de forma responsable?</p></div></div>
+        <textarea class="ta small" data-key="similarity-floor.gap1" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="similarity-floor.gap1"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-similarity-floor-gap1"><div class="lb " data-lang="en"><p>It was tuned by hand against a small set of known questions and is specific to this embedding model — swap the model and the number is meaningless. To change it responsibly you need a labelled set of questions with known answerable/unanswerable status, and you pick the value from the tradeoff curve rather than from a hunch.</p></div><div class="lb " data-lang="es"><p>Se ajustó a mano contra un set chico de preguntas conocidas y es específico de este modelo de embeddings — cambiás de modelo y el número no significa nada. Para cambiarlo de forma responsable necesitás un set etiquetado de preguntas con estado conocido de contestable/no contestable, y elegís el valor desde la curva de trade-off, no desde una corazonada.</p></div><span class="anchor" title="source">src/answer.py:31</span></div>
+      </div>
+      <div class="gap">
+        <div class="q"><div class="lb " data-lang="en"><p>The prompt also tells the model to say when the text does not contain the answer. If the model already does that, why keep the floor at all?</p></div><div class="lb " data-lang="es"><p>El prompt también le dice al modelo que avise cuando el texto no tiene la respuesta. Si el modelo ya hace eso, ¿para qué mantener el piso?</p></div></div>
+        <textarea class="ta small" data-key="similarity-floor.gap2" data-min="8" data-ph-en="From memory. No scrolling up." data-ph-es="De memoria. Sin subir a mirar."></textarea>
+        <button class="btn ghost" data-reveal="similarity-floor.gap2"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+        <div class="revealbox" id="rev-similarity-floor-gap2"><div class="lb " data-lang="en"><p>Two independent defences at different levels. The floor is deterministic, costs nothing, and cannot be talked out of its decision; the instruction is probabilistic and degrades exactly when the passages are seductively plausible — which is the case that matters. The floor also saves the generation call entirely, so refusal is free and instant.</p></div><div class="lb " data-lang="es"><p>Dos defensas independientes en niveles distintos. El piso es determinista, no cuesta nada y no se lo puede convencer de cambiar de opinión; la instrucción es probabilística y se degrada justamente cuando los pasajes son seductoramente plausibles — que es el caso que importa. El piso además ahorra la llamada de generación entera, así que negarse sale gratis y es instantáneo.</p></div><span class="anchor" title="source">src/answer.py:44</span></div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seniorzone" data-senior="similarity-floor">
+      <div class="srow"><b><span class="lb " data-lang="en">Tradeoff taken</span><span class="lb " data-lang="es">Trade-off asumido</span></b><div class="lb " data-lang="en"><p>A single global constant buys determinism, zero cost, and an auditable refusal path, at the price of being wrong per-query in both directions and being silently invalidated by any embedding model change. It is the right v1 and a known piece of debt.</p></div><div class="lb " data-lang="es"><p>Una única constante global compra determinismo, costo cero y un camino de negativa auditable, al precio de equivocarse por consulta en las dos direcciones y de quedar invalidada en silencio ante cualquier cambio del modelo de embeddings.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Failure modes</span><span class="lb " data-lang="es">Modos de falla</span></b><div class="fm"><div class="fmhead"><div class="lb mode" data-lang="en"><p>Silent invalidation on model upgrade</p></div><div class="lb mode" data-lang="es"><p>Invalidación silenciosa al actualizar el modelo</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Looks like</span><span class="lb " data-lang="es">Se ve así</span></b><div class="lb " data-lang="en"><p>Someone bumps the embedding model, every score shifts, and the refusal rate jumps or collapses overnight with no code change to blame.</p></div><div class="lb " data-lang="es"><p>Alguien actualiza el modelo de embeddings, todos los scores se corren y la tasa de negativas se dispara o se desploma de un día para el otro sin ningún cambio de código al que culpar.</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Mitigation</span><span class="lb " data-lang="es">Mitigación</span></b><div class="lb " data-lang="en"><p>Store the model identifier next to the constant and fail loudly at startup when they disagree. A magic number that depends on another component&#x27;s version must be coupled to it explicitly.</p></div><div class="lb " data-lang="es"><p>Guardar el identificador del modelo junto a la constante y fallar ruidosamente al arrancar cuando no coinciden. Un número mágico que depende de la versión de otro componente tiene que estar acoplado a ella explícitamente.</p></div></div></div><div class="fm"><div class="fmhead"><div class="lb mode" data-lang="en"><p>Refusal rate drifting unnoticed</p></div><div class="lb mode" data-lang="es"><p>Deriva no detectada de la tasa de negativas</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Looks like</span><span class="lb " data-lang="es">Se ve así</span></b><div class="lb " data-lang="en"><p>Users quietly stop using the tool. Nothing errors, nothing pages, latency and uptime look perfect.</p></div><div class="lb " data-lang="es"><p>Los usuarios dejan de usar la herramienta sin decir nada. No hay errores, no suena ninguna alerta, la latencia y el uptime se ven perfectos.</p></div></div><div class="fmrow"><b><span class="lb " data-lang="en">Mitigation</span><span class="lb " data-lang="es">Mitigación</span></b><div class="lb " data-lang="en"><p>Treat the refusal rate as a first-class production metric with an alert on it. It is the only signal that distinguishes a healthy system from a useless one, and no infrastructure dashboard will ever show it to you.</p></div><div class="lb " data-lang="es"><p>Tratar la tasa de negativas como una métrica de producción de primer nivel, con alerta. Es la única señal que distingue un sistema sano de uno inútil, y ningún dashboard de infraestructura te la va a mostrar.</p></div></div></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Cost and complexity</span><span class="lb " data-lang="es">Costo y complejidad</span></b><div class="lb " data-lang="en"><p>Free — one comparison per returned row — and it *saves* money by skipping generation on unanswerable questions. In a corpus with poor coverage that saving is substantial.</p></div><div class="lb " data-lang="es"><p>Gratis — una comparación por fila devuelta — y encima *ahorra* plata al saltearse la generación en preguntas incontestables. En un corpus con cobertura pobre ese ahorro es sustancial.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">At 100x</span><span class="lb " data-lang="es">A 100x</span></b><div class="lb " data-lang="en"><p>Global constants stop working once the corpus is heterogeneous, because a well-covered product area and a thin one need different floors. The scalable version is per-collection floors calibrated from labelled data, with the refusal rate monitored per collection rather than globally.</p></div><div class="lb " data-lang="es"><p>Las constantes globales dejan de funcionar apenas el corpus es heterogéneo, porque un área de producto bien cubierta y una escuálida necesitan pisos distintos. La versión escalable son pisos por colección calibrados con datos etiquetados, y la tasa de negativas monitoreada por colección en vez de globalmente.</p></div></div>
+      <div class="srow"><b><span class="lb " data-lang="en">Alternatives not taken</span><span class="lb " data-lang="es">Alternativas descartadas</span></b><div class="alt"><div class="lb optname" data-lang="en"><p>Let a small model judge relevance instead of using a number</p></div><div class="lb optname" data-lang="es"><p>Dejar que un modelo chico juzgue la relevancia en vez de usar un número</p></div><div class="fmrow"><b><span class="lb " data-lang="en">Why not</span><span class="lb " data-lang="es">Por qué no</span></b><div class="lb " data-lang="en"><p>More accurate and genuinely worth it above a certain volume, but it adds a call, latency, cost, and a second non-deterministic component to debug. Not the right first move when a constant gets you most of the way.</p></div><div class="lb " data-lang="es"><p>Más preciso y realmente vale la pena por encima de cierto volumen, pero agrega una llamada, latencia, costo y un segundo componente no determinista que debuggear. No es el primer paso correcto cuando una constante te lleva casi todo el camino.</p></div></div></div></div>
+    </div>
+  </article></div>
+</section>
+<section id="rebuild" class="sec" data-sec="rebuild">
+  <h2><span class="secnum">03</span><span class="lb " data-lang="en">Rebuild it yourself</span><span class="lb " data-lang="es">Reconstruilo vos</span></h2>
+  <div class="lockmsg"><div class="lb " data-lang="en"><p>This section unlocks when the work above is done.</p></div><div class="lb " data-lang="es"><p>Esta sección se abre cuando termines lo de arriba.</p></div><button class="btn glass" data-glass="sec:rebuild"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button></div>
+  <div class="secbody">
+    <div class="card"><h3><span class="lb " data-lang="en">The specification</span><span class="lb " data-lang="es">La especificación</span></h3><div class="lb " data-lang="en"><p>Build a module <code>qa.py</code> that answers questions from a fixed set of documents, from an empty file, without opening the original source.</p><p>It must expose exactly two functions:</p><p><code>ingest(docs)</code> takes a list of <code>{&quot;url&quot;: str, &quot;text&quot;: str}</code>. It splits each document into overlapping passages, embeds each passage, and stores passage text, source URL, and embedding. Calling it twice with the same URL must not create duplicates.</p><p><code>ask(question)</code> returns <code>{&quot;answer&quot;: str, &quot;sources&quot;: [str]}</code>. It embeds the question, finds the closest stored passages, drops any that are not similar enough, and — if none survive — returns a fixed &quot;I don&#x27;t know&quot; answer with an empty sources list <strong>without calling the generation model at all</strong>. Otherwise it builds a prompt from the surviving passages, calls the model, and returns the reply with the deduplicated source URLs.</p><p>Use any embedding and generation functions you like; the tests inject fakes.</p></div><div class="lb " data-lang="es"><p>Construí un módulo <code>qa.py</code> que conteste preguntas a partir de un conjunto fijo de documentos, desde un archivo vacío, sin abrir el código original.</p><p>Tiene que exponer exactamente dos funciones:</p><p><code>ingest(docs)</code> recibe una lista de <code>{&quot;url&quot;: str, &quot;text&quot;: str}</code>. Parte cada documento en pasajes superpuestos, embebe cada pasaje y guarda texto del pasaje, URL de origen y embedding. Llamarla dos veces con la misma URL no debe crear duplicados.</p><p><code>ask(question)</code> devuelve <code>{&quot;answer&quot;: str, &quot;sources&quot;: [str]}</code>. Embebe la pregunta, busca los pasajes guardados más cercanos, descarta los que no son suficientemente parecidos y — si no sobrevive ninguno — devuelve una respuesta fija de &quot;no sé&quot; con lista de fuentes vacía <strong>sin llamar en absoluto al modelo de generación</strong>. Si no, arma un prompt con los pasajes sobrevivientes, llama al modelo y devuelve la respuesta con las URLs de origen deduplicadas.</p><p>Usá las funciones de embedding y generación que quieras; los tests inyectan versiones falsas.</p></div></div>
+    <div class="card"><h3><span class="lb " data-lang="en">Constraints</span><span class="lb " data-lang="es">Restricciones</span></h3><ul class="cons"><li><div class="lb " data-lang="en"><p>In-memory storage is fine. A list of dicts is a perfectly good vector store at this size — do not install a database to prove a point.</p></div><div class="lb " data-lang="es"><p>Guardar en memoria está bien. Una lista de diccionarios es un almacén vectorial perfectamente válido a esta escala — no instales una base de datos para demostrar nada.</p></div></li><li><div class="lb " data-lang="en"><p>No frameworks. If you find yourself importing a retrieval library, you have outsourced the exact thing you are trying to learn.</p></div><div class="lb " data-lang="es"><p>Sin frameworks. Si te encontrás importando una librería de retrieval, tercerizaste justamente lo que estás tratando de aprender.</p></div></li><li><div class="lb " data-lang="en"><p>Write the similarity function yourself, from the definition. It is four lines and it is the piece most people never actually look at.</p></div><div class="lb " data-lang="es"><p>Escribí vos la función de similitud, desde la definición. Son cuatro líneas y es la pieza que casi nadie mira de verdad.</p></div></li></ul></div>
+    <div class="card"><h3><span class="lb " data-lang="en">Milestones</span><span class="lb " data-lang="es">Hitos</span></h3><ol class="mslist">
+    <li class="ms">
+      <label><input type="checkbox" data-ms="0"><span><span class="lb " data-lang="en">Splitting</span><span class="lb " data-lang="es">El corte</span></span></label>
+      <div class="msbody">
+        <div class="lb " data-lang="en"><p>A function that turns a long string into overlapping pieces of a given size and overlap.</p></div><div class="lb " data-lang="es"><p>Una función que convierte un string largo en pedazos superpuestos de un tamaño y superposición dados.</p></div>
+        <div class="acc"><b><span class="lb " data-lang="en">Done when</span><span class="lb " data-lang="es">Listo cuando</span></b><span class="lb " data-lang="en">A 2,000-character string with size 800 and overlap 150 produces pieces that, glued back with the overlap removed, reproduce the original exactly.</span><span class="lb " data-lang="es">Un string de 2.000 caracteres con tamaño 800 y superposición 150 produce pedazos que, pegados sacando la superposición, reproducen el original exactamente.</span></div>
+        <details><summary><span class="lb " data-lang="en">Nudge</span><span class="lb " data-lang="es">Empujoncito</span></summary><div class="lb " data-lang="en"><p>Advance your cursor by (size - overlap) each step, not by size. Getting the last piece right is the part everyone gets wrong first.</p></div><div class="lb " data-lang="es"><p>Avanzá el cursor (tamaño - superposición) en cada paso, no el tamaño. El último pedazo es la parte que todos hacen mal la primera vez.</p></div></details>
+      </div>
+    </li>
+    <li class="ms">
+      <label><input type="checkbox" data-ms="1"><span><span class="lb " data-lang="en">Closeness</span><span class="lb " data-lang="es">La cercanía</span></span></label>
+      <div class="msbody">
+        <div class="lb " data-lang="en"><p>A function that scores how similar two number lists are, returning 1 for identical direction and 0 for unrelated.</p></div><div class="lb " data-lang="es"><p>Una función que puntúa qué tan parecidas son dos listas de números, devolviendo 1 para la misma dirección y 0 para no relacionadas.</p></div>
+        <div class="acc"><b><span class="lb " data-lang="en">Done when</span><span class="lb " data-lang="es">Listo cuando</span></b><span class="lb " data-lang="en">score(v, v) == 1.0 for any non-zero v, and score([1,0], [0,1]) == 0.0.</span><span class="lb " data-lang="es">score(v, v) == 1.0 para cualquier v distinto de cero, y score([1,0], [0,1]) == 0.0.</span></div>
+        <details><summary><span class="lb " data-lang="en">Nudge</span><span class="lb " data-lang="es">Empujoncito</span></summary><div class="lb " data-lang="en"><p>Two lists point the same way when their dot product equals the product of their lengths. Divide one by the other and you are done — but decide what a zero-length list should do before a test finds out for you.</p></div><div class="lb " data-lang="es"><p>Dos listas apuntan en la misma dirección cuando su producto punto es igual al producto de sus longitudes. Dividí uno por el otro y listo — pero decidí qué hace una lista de longitud cero antes de que un test lo averigüe por vos.</p></div></details>
+      </div>
+    </li>
+    <li class="ms">
+      <label><input type="checkbox" data-ms="2"><span><span class="lb " data-lang="en">Storing</span><span class="lb " data-lang="es">El guardado</span></span></label>
+      <div class="msbody">
+        <div class="lb " data-lang="en"><p><code>ingest(docs)</code> fills the store, and re-ingesting the same URL replaces rather than duplicates.</p></div><div class="lb " data-lang="es"><p><code>ingest(docs)</code> llena el almacén, y reingerir la misma URL reemplaza en vez de duplicar.</p></div>
+        <div class="acc"><b><span class="lb " data-lang="en">Done when</span><span class="lb " data-lang="es">Listo cuando</span></b><span class="lb " data-lang="en">Ingesting the same document twice leaves the same number of stored passages as ingesting it once.</span><span class="lb " data-lang="es">Ingerir el mismo documento dos veces deja la misma cantidad de pasajes guardados que ingerirlo una vez.</span></div>
+        <details><summary><span class="lb " data-lang="en">Nudge</span><span class="lb " data-lang="es">Empujoncito</span></summary><div class="lb " data-lang="en"><p>Delete by URL before inserting. This is the moment you find out why every passage had to carry its source.</p></div><div class="lb " data-lang="es"><p>Borrá por URL antes de insertar. Este es el momento en que descubrís por qué cada pasaje tenía que llevar su origen.</p></div></details>
+      </div>
+    </li>
+    <li class="ms">
+      <label><input type="checkbox" data-ms="3"><span><span class="lb " data-lang="en">Searching</span><span class="lb " data-lang="es">La búsqueda</span></span></label>
+      <div class="msbody">
+        <div class="lb " data-lang="en"><p>Given a question vector, return the k closest passages with their scores, best first.</p></div><div class="lb " data-lang="es"><p>Dado el vector de una pregunta, devolver los k pasajes más cercanos con sus scores, el mejor primero.</p></div>
+        <div class="acc"><b><span class="lb " data-lang="en">Done when</span><span class="lb " data-lang="es">Listo cuando</span></b><span class="lb " data-lang="en">With three stored passages and k=2, you get exactly two results and the first has the higher score.</span><span class="lb " data-lang="es">Con tres pasajes guardados y k=2, obtenés exactamente dos resultados y el primero tiene el score más alto.</span></div>
+        <details><summary><span class="lb " data-lang="en">Nudge</span><span class="lb " data-lang="es">Empujoncito</span></summary><div class="lb " data-lang="en"><p>Score everything, sort descending, slice. Do not optimise this — at this size the obvious version is the correct version.</p></div><div class="lb " data-lang="es"><p>Puntuá todo, ordená descendente, cortá. No lo optimices — a esta escala la versión obvia es la correcta.</p></div></details>
+      </div>
+    </li>
+    <li class="ms">
+      <label><input type="checkbox" data-ms="4"><span><span class="lb " data-lang="en">Refusing</span><span class="lb " data-lang="es">La negativa</span></span></label>
+      <div class="msbody">
+        <div class="lb " data-lang="en"><p>Drop passages below the floor, and when nothing survives return the fixed answer without calling the generation model.</p></div><div class="lb " data-lang="es"><p>Descartar pasajes bajo el piso y, cuando no sobreviva ninguno, devolver la respuesta fija sin llamar al modelo de generación.</p></div>
+        <div class="acc"><b><span class="lb " data-lang="en">Done when</span><span class="lb " data-lang="es">Listo cuando</span></b><span class="lb " data-lang="en">With a fake generator that raises if called, a question unrelated to every stored passage still returns cleanly.</span><span class="lb " data-lang="es">Con un generador falso que lanza una excepción si lo llaman, una pregunta ajena a todos los pasajes guardados igual devuelve limpiamente.</span></div>
+        <details><summary><span class="lb " data-lang="en">Nudge</span><span class="lb " data-lang="es">Empujoncito</span></summary><div class="lb " data-lang="en"><p>Return before you build the prompt, not inside the model call. If your test can only pass by catching an exception, the check is in the wrong place.</p></div><div class="lb " data-lang="es"><p>Devolvé antes de armar el prompt, no adentro de la llamada al modelo. Si tu test solo pasa atrapando una excepción, el chequeo está en el lugar equivocado.</p></div></details>
+      </div>
+    </li>
+    <li class="ms">
+      <label><input type="checkbox" data-ms="5"><span><span class="lb " data-lang="en">Answering</span><span class="lb " data-lang="es">La respuesta</span></span></label>
+      <div class="msbody">
+        <div class="lb " data-lang="en"><p>Build the prompt from surviving passages, call the model, return the answer with deduplicated source URLs.</p></div><div class="lb " data-lang="es"><p>Armar el prompt con los pasajes sobrevivientes, llamar al modelo y devolver la respuesta con las URLs de origen deduplicadas.</p></div>
+        <div class="acc"><b><span class="lb " data-lang="en">Done when</span><span class="lb " data-lang="es">Listo cuando</span></b><span class="lb " data-lang="en">Two surviving passages from the same page yield one source URL, not two.</span><span class="lb " data-lang="es">Dos pasajes sobrevivientes de la misma página producen una URL de origen, no dos.</span></div>
+        <details><summary><span class="lb " data-lang="en">Nudge</span><span class="lb " data-lang="es">Empujoncito</span></summary><div class="lb " data-lang="en"><p>Deduplicate while preserving order — the best-scoring source should still be listed first.</p></div><div class="lb " data-lang="es"><p>Deduplicá preservando el orden — la fuente con mejor score tiene que seguir apareciendo primero.</p></div></details>
+      </div>
+    </li></ol></div>
+    <div class="card"><h3><span class="lb " data-lang="en">Run these against your own build</span><span class="lb " data-lang="es">Corré esto contra tu propia versión</span></h3><div class="filename">test_qa.py</div><pre><code>&quot;&quot;&quot;Run: pytest test_qa.py
+
+These test the contract, not any particular implementation. Fake embedder:
+every word becomes a dimension, so texts sharing words score high.
+&quot;&quot;&quot;
+import pytest
+import qa
+
+
+def fake_embed(text):
+    vocab = [&quot;password&quot;, &quot;reset&quot;, &quot;invoice&quot;, &quot;refund&quot;, &quot;swallow&quot;, &quot;airspeed&quot;]
+    low = text.lower()
+    return [1.0 if w in low else 0.0 for w in vocab]
+
+
+class Boom(Exception):
+    pass
+
+
+def exploding_generate(prompt):
+    raise Boom(&quot;the generation model must not be called here&quot;)
+
+
+def echo_generate(prompt):
+    return &quot;ANSWER&quot;
+
+
+@pytest.fixture(autouse=True)
+def wire(monkeypatch):
+    monkeypatch.setattr(qa, &quot;embed&quot;, fake_embed, raising=False)
+    monkeypatch.setattr(qa, &quot;generate&quot;, echo_generate, raising=False)
+    qa.reset()
+
+
+DOCS = [
+    {&quot;url&quot;: &quot;https://help/pw&quot;, &quot;text&quot;: &quot;To reset a password open settings. &quot; * 40},
+    {&quot;url&quot;: &quot;https://help/inv&quot;, &quot;text&quot;: &quot;To find an invoice open billing. &quot; * 40},
+]
+
+
+def test_split_is_lossless_and_overlapping():
+    text = &quot;x&quot; * 2000
+    pieces = qa.split(text, size=800, overlap=150)
+    assert len(pieces) &gt; 1
+    assert all(len(p) &lt;= 800 for p in pieces)
+    glued = pieces[0] + &quot;&quot;.join(p[150:] for p in pieces[1:])
+    assert glued == text
+
+
+def test_score_bounds():
+    assert qa.score([1.0, 0.0], [1.0, 0.0]) == pytest.approx(1.0)
+    assert qa.score([1.0, 0.0], [0.0, 1.0]) == pytest.approx(0.0)
+
+
+def test_reingest_does_not_duplicate():
+    qa.ingest(DOCS)
+    first = qa.count()
+    qa.ingest(DOCS)
+    assert qa.count() == first
+
+
+def test_answers_from_the_right_document():
+    qa.ingest(DOCS)
+    out = qa.ask(&quot;how do I reset a password&quot;)
+    assert out[&quot;answer&quot;] == &quot;ANSWER&quot;
+    assert out[&quot;sources&quot;] == [&quot;https://help/pw&quot;]
+
+
+def test_refuses_without_calling_the_model(monkeypatch):
+    qa.ingest(DOCS)
+    monkeypatch.setattr(qa, &quot;generate&quot;, exploding_generate, raising=False)
+    out = qa.ask(&quot;what is the airspeed of a swallow&quot;)
+    assert out[&quot;sources&quot;] == []
+    assert &quot;know&quot; in out[&quot;answer&quot;].lower()
+
+
+def test_sources_are_deduplicated():
+    qa.ingest([{&quot;url&quot;: &quot;https://help/pw&quot;, &quot;text&quot;: &quot;reset password. &quot; * 200}])
+    out = qa.ask(&quot;reset password&quot;)
+    assert out[&quot;sources&quot;] == [&quot;https://help/pw&quot;]
+</code></pre></div>
+    <div class="card">
+      <h3><span class="lb " data-lang="en">What did you build, and what fought you?</span><span class="lb " data-lang="es">¿Qué construiste y qué se te resistió?</span></h3>
+      <div class="hint"><div class="lb " data-lang="en"><p>Write it before you unlock the source. What you struggled with is the map of what you actually learned.</p></div><div class="lb " data-lang="es"><p>Escribilo antes de desbloquear el código. Lo que te costó es el mapa de lo que de verdad aprendiste.</p></div></div>
+      <textarea class="ta" data-key="rebuild.notes" data-min="80" data-ph-en="What you built, in what order, and the exact point where you got stuck." data-ph-es="Qué construiste, en qué orden y el punto exacto donde te trabaste."></textarea>
+      <div class="meter"><span class="wc" data-for="rebuild.notes">0</span> <span class="lb " data-lang="en">words</span><span class="lb " data-lang="es">palabras</span>
+        <span class="short" data-for="rebuild.notes"></span></div>
+      <button class="btn" data-submit="rebuild.notes"><span class="lb " data-lang="en">Unlock the original source</span><span class="lb " data-lang="es">Desbloquear el código original</span></button>
+      <button class="btn glass" data-glass="rebuild"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button>
+    </div>
+    <div class="revealbox" id="rev-rebuild-notes">
+      <div class="card"><h3><span class="lb " data-lang="en">The original source</span><span class="lb " data-lang="es">El código original</span></h3><div class="srcfile"><div class="filename">src/qa_reference.py</div><pre><code>&quot;&quot;&quot;Reference implementation. Read this only after your own version passes.&quot;&quot;&quot;
+import math
+
+FLOOR = 0.72
+TOP_K = 5
+_STORE = []  # {url, text, vec}
+
+
+def reset():
+    _STORE.clear()
+
+
+def count():
+    return len(_STORE)
+
+
+def split(text, size=800, overlap=150):
+    if size &lt;= overlap:
+        raise ValueError(&quot;size must exceed overlap&quot;)
+    step = size - overlap
+    pieces, i = [], 0
+    while i &lt; len(text):
+        pieces.append(text[i:i + size])
+        if i + size &gt;= len(text):
+            break
+        i += step
+    return pieces
+
+
+def score(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    if na == 0 or nb == 0:
+        return 0.0
+    return dot / (na * nb)
+
+
+def ingest(docs):
+    for doc in docs:
+        # Delete-then-insert is what keeps re-ingestion idempotent.
+        _STORE[:] = [r for r in _STORE if r[&quot;url&quot;] != doc[&quot;url&quot;]]
+        for piece in split(doc[&quot;text&quot;]):
+            _STORE.append({&quot;url&quot;: doc[&quot;url&quot;], &quot;text&quot;: piece, &quot;vec&quot;: embed(piece)})
+
+
+def search(vec, k=TOP_K):
+    scored = [(score(vec, r[&quot;vec&quot;]), r) for r in _STORE]
+    scored.sort(key=lambda p: p[0], reverse=True)
+    return scored[:k]
+
+
+def ask(question):
+    hits = [(s, r) for s, r in search(embed(question)) if s &gt;= FLOOR]
+    if not hits:
+        # Return before the prompt is built: refusing must cost nothing.
+        return {&quot;answer&quot;: &quot;I don&#x27;t know based on the documents I have.&quot;, &quot;sources&quot;: []}
+    passages = &quot;\n\n---\n\n&quot;.join(r[&quot;text&quot;] for _, r in hits)
+    prompt = (
+        &quot;Answer the question using ONLY the passages below. &quot;
+        &quot;If they do not contain the answer, say so plainly.\n\n&quot;
+        f&quot;PASSAGES:\n{passages}\n\nQUESTION: {question}&quot;
+    )
+    sources, seen = [], set()
+    for _, r in hits:
+        if r[&quot;url&quot;] not in seen:
+            seen.add(r[&quot;url&quot;])
+            sources.append(r[&quot;url&quot;])
+    return {&quot;answer&quot;: generate(prompt), &quot;sources&quot;: sources}
+</code></pre></div></div>
+      <div class="card"><h3><span class="lb " data-lang="en">Diff your thinking</span><span class="lb " data-lang="es">Compará tu razonamiento</span></h3><div class="hint"><div class="lb " data-lang="en"><p>Not every difference is a mistake. Sometimes yours is better — say so when it is.</p></div><div class="lb " data-lang="es"><p>No toda diferencia es un error. A veces la tuya es mejor — decilo cuando lo sea.</p></div></div><ul class="cons"><li><div class="lb " data-lang="en"><p>Where does your refusal check sit relative to the prompt construction? If it is after, you pay for and wait on a generation call you never needed — find the line and say why the order matters.</p></div><div class="lb " data-lang="es"><p>¿Dónde está tu chequeo de negativa respecto de la construcción del prompt? Si está después, pagás y esperás una llamada de generación que nunca necesitabas — encontrá la línea y decí por qué importa el orden.</p></div></li><li><div class="lb " data-lang="en"><p>How did your <code>split</code> handle the final piece, and did it lose or duplicate characters? Run the lossless test on the original too — it is not obviously correct either.</p></div><div class="lb " data-lang="es"><p>¿Cómo manejó tu <code>split</code> el último pedazo, perdió o duplicó caracteres? Corré el test de no-pérdida también sobre el original — tampoco es obviamente correcto.</p></div></li><li><div class="lb " data-lang="en"><p>Did you guard against a zero-length vector in your scoring function? If not, write the input that crashes it, and then ask why the original guards there instead of at the caller.</p></div><div class="lb " data-lang="es"><p>¿Protegiste el caso de vector de longitud cero en tu función de puntuación? Si no, escribí el input que la rompe, y después preguntate por qué el original protege ahí y no en quien la llama.</p></div></li><li><div class="lb " data-lang="en"><p>Name one thing your version does better than the reference. There will be one — and noticing it is the point where you stop treating generated code as automatically correct.</p></div><div class="lb " data-lang="es"><p>Nombrá una cosa que tu versión hace mejor que la de referencia. Va a haber una — y notarla es el punto donde dejás de tratar al código generado como automáticamente correcto.</p></div></li></ul></div>
+    </div>
+  </div>
+</section>
+<section id="senior" class="sec" data-sec="senior">
+  <h2><span class="secnum">04</span><span class="lb " data-lang="en">Senior register</span><span class="lb " data-lang="es">Registro senior</span></h2>
+  <div class="lockmsg"><div class="lb " data-lang="en"><p>This section unlocks when the work above is done.</p></div><div class="lb " data-lang="es"><p>Esta sección se abre cuando termines lo de arriba.</p></div><button class="btn glass" data-glass="sec:senior"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button></div>
+  <div class="secbody">
+    <div class="card"><h3><span class="lb " data-lang="en">The system at staff level</span><span class="lb " data-lang="es">El sistema a nivel staff</span></h3><div class="lb " data-lang="en"><p>This is a two-stage system where the interesting engineering is entirely in stage one. Generation quality is effectively a constant you bought from a vendor; retrieval quality is the variable you control, and it sets the ceiling on everything the user sees. That single observation determines where effort belongs: passage size, splitting strategy, and the refusal floor are the levers, while prompt wording is a rounding error.</p><p>The design&#x27;s real strength is that it fails closed. The floor check happens before the generation call, so an unanswerable question costs nothing and produces a refusal rather than a fabrication. Its real weakness is that the whole quality story rests on one hand-tuned constant that is silently coupled to the embedding model version and is not monitored anywhere.</p><p>If you reviewed this, the highest-value comment is not about the code — it is that the refusal rate must become a monitored metric with an alert, and that below-floor queries must be logged. Without those two, this system can decay into uselessness while every infrastructure dashboard stays green.</p></div><div class="lb " data-lang="es"><p>Este es un sistema de dos etapas donde toda la ingeniería interesante está en la primera. La calidad de generación es en los hechos una constante que le compraste a un proveedor; la calidad de búsqueda es la variable que controlás, y fija el techo de todo lo que ve el usuario. Esa sola observación determina dónde va el esfuerzo: el tamaño del pasaje, la estrategia de corte y el piso de negativa son las palancas, mientras que la redacción del prompt es un error de redondeo.</p><p>La verdadera fortaleza del diseño es que falla cerrado. El chequeo del piso pasa antes de la llamada de generación, así que una pregunta incontestable no cuesta nada y produce una negativa en vez de una fabricación. Su verdadera debilidad es que toda la historia de calidad se apoya en una constante ajustada a mano que está acoplada en silencio a la versión del modelo de embeddings y no se monitorea en ningún lado.</p><p>Si hicieras el review, el comentario de mayor valor no es sobre el código — es que la tasa de negativas tiene que volverse una métrica monitoreada con alerta, y que las consultas por debajo del piso tienen que loguearse. Sin esas dos cosas, este sistema puede degradarse hasta la inutilidad mientras todos los dashboards de infraestructura siguen en verde.</p></div></div>
+    <div class="card"><h3><span class="lb " data-lang="en">Design review questions</span><span class="lb " data-lang="es">Preguntas de design review</span></h3>
+    <div class="gap">
+      <div class="q"><div class="lb " data-lang="en"><p>A stakeholder asks you to guarantee the service never gives a wrong answer. What do you tell them?</p></div><div class="lb " data-lang="es"><p>Un stakeholder te pide que garantices que el servicio nunca da una respuesta equivocada. ¿Qué le decís?</p></div></div>
+      <button class="btn ghost" data-reveal="rq0"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+      <div class="revealbox" id="rev-rq0"><div class="lb " data-lang="en"><p>That no such guarantee exists, and offer the real one instead: every answer is traceable to the exact passages it came from, and the system refuses rather than guessing when it finds nothing close enough. Then make the tradeoff explicit and let them choose — a higher floor means fewer wrong answers and more refusals. Framing it as a dial they control is honest and moves the conversation somewhere useful.</p></div><div class="lb " data-lang="es"><p>Que esa garantía no existe, y ofrecer la real en su lugar: toda respuesta es trazable a los pasajes exactos de los que salió, y el sistema se niega en vez de adivinar cuando no encuentra nada suficientemente cercano. Después hacé explícito el trade-off y que elijan — un piso más alto significa menos respuestas equivocadas y más negativas. Presentarlo como una perilla que ellos controlan es honesto y lleva la conversación a un lugar útil.</p></div></div>
+    </div>
+    <div class="gap">
+      <div class="q"><div class="lb " data-lang="en"><p>Answer quality drops noticeably after a release that touched nothing in this service. What do you check first?</p></div><div class="lb " data-lang="es"><p>La calidad de las respuestas baja notoriamente después de un release que no tocó nada de este servicio. ¿Qué revisás primero?</p></div></div>
+      <button class="btn ghost" data-reveal="rq1"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+      <div class="revealbox" id="rev-rq1"><div class="lb " data-lang="en"><p>Whether the embedding model version changed, because that silently invalidates the floor without any code in this repo changing. Second, whether documentation was bulk-edited, which shifts every passage boundary. Both are upstream causes that leave this service&#x27;s own diff completely clean.</p></div><div class="lb " data-lang="es"><p>Si cambió la versión del modelo de embeddings, porque eso invalida el piso en silencio sin que cambie ningún código de este repo. Segundo, si se editó documentación en masa, que corre todos los límites de pasaje. Las dos son causas aguas arriba que dejan el diff de este servicio completamente limpio.</p></div></div>
+    </div>
+    <div class="gap">
+      <div class="q"><div class="lb " data-lang="en"><p>How would you tell whether a wrong answer was a retrieval failure or a generation failure?</p></div><div class="lb " data-lang="es"><p>¿Cómo distinguirías si una respuesta equivocada fue una falla de búsqueda o una de generación?</p></div></div>
+      <button class="btn ghost" data-reveal="rq2"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+      <div class="revealbox" id="rev-rq2"><div class="lb " data-lang="en"><p>Read the cited passages. If they contain the correct answer, generation misread them and the fix is in the prompt or the model. If they do not, retrieval failed and the fix is in splitting, the floor, or adding keyword search. This is precisely why sources are returned, and why a version that returned only prose would be nearly impossible to improve.</p></div><div class="lb " data-lang="es"><p>Leer los pasajes citados. Si contienen la respuesta correcta, la generación los leyó mal y el arreglo está en el prompt o el modelo. Si no, falló la búsqueda y el arreglo está en el corte, el piso o agregar búsqueda por palabra clave. Por esto exactamente se devuelven las fuentes, y por eso una versión que devolviera solo prosa sería casi imposible de mejorar.</p></div></div>
+    </div>
+    <div class="gap">
+      <div class="q"><div class="lb " data-lang="en"><p>What is the first thing you would add, and defend the choice against &quot;just use a better model&quot;.</p></div><div class="lb " data-lang="es"><p>¿Qué es lo primero que agregarías, y defendé la elección contra &quot;usá un modelo mejor&quot;?</p></div></div>
+      <button class="btn ghost" data-reveal="rq3"><span class="lb " data-lang="en">Check my answer</span><span class="lb " data-lang="es">Ver la respuesta</span></button>
+      <div class="revealbox" id="rev-rq3"><div class="lb " data-lang="en"><p>Logging of below-floor queries. A better generation model cannot answer from passages it never received, so it cannot fix a retrieval miss — and until you can see which questions are missing, every other improvement is a guess. It is also nearly free, which makes it the highest ratio of information gained to work done in the whole system.</p></div><div class="lb " data-lang="es"><p>Loguear las consultas que caen bajo el piso. Un modelo de generación mejor no puede contestar desde pasajes que nunca recibió, así que no puede arreglar una falla de búsqueda — y hasta que no puedas ver qué preguntas se están perdiendo, cualquier otra mejora es una adivinanza. Además es casi gratis, lo que lo vuelve la mejor relación entre información ganada y trabajo hecho de todo el sistema.</p></div></div>
+    </div></div>
+    <div class="card"><h3><span class="lb " data-lang="en">Worth memorising</span><span class="lb " data-lang="es">Vale la pena memorizar</span></h3><div class="flashgrid"><div class="flashcard" tabindex="0"><div class="front"><div class="lb " data-lang="en"><p>Where does the refusal check sit, and why there?</p></div><div class="lb " data-lang="es"><p>¿Dónde está el chequeo de negativa y por qué ahí?</p></div></div><div class="back"><div class="lb " data-lang="en"><p>Before the prompt is built, so an unanswerable question never costs a generation call.</p></div><div class="lb " data-lang="es"><p>Antes de armar el prompt, así una pregunta incontestable nunca cuesta una llamada de generación.</p></div></div></div><div class="flashcard" tabindex="0"><div class="front"><div class="lb " data-lang="en"><p>Why does each passage store its source URL?</p></div><div class="lb " data-lang="es"><p>¿Por qué cada pasaje guarda su URL de origen?</p></div></div><div class="back"><div class="lb " data-lang="en"><p>For citations, for debugging retrieval-vs-generation failures, and to delete by URL so re-ingestion is idempotent.</p></div><div class="lb " data-lang="es"><p>Para citas, para debuggear fallas de búsqueda vs generación, y para borrar por URL y que la reingesta sea idempotente.</p></div></div></div><div class="flashcard" tabindex="0"><div class="front"><div class="lb " data-lang="en"><p>What silently invalidates the 0.72 floor?</p></div><div class="lb " data-lang="es"><p>¿Qué invalida en silencio el piso de 0,72?</p></div></div><div class="back"><div class="lb " data-lang="en"><p>Any change to the embedding model — scores shift and no code in this repo changed.</p></div><div class="lb " data-lang="es"><p>Cualquier cambio en el modelo de embeddings — los scores se corren y ningún código de este repo cambió.</p></div></div></div><div class="flashcard" tabindex="0"><div class="front"><div class="lb " data-lang="en"><p>Advance step when splitting with size S and overlap O?</p></div><div class="lb " data-lang="es"><p>¿Cuánto avanza el cursor al cortar con tamaño S y superposición O?</p></div></div><div class="back"><div class="lb " data-lang="en"><p>S − O, not S.</p></div><div class="lb " data-lang="es"><p>S − O, no S.</p></div></div></div></div></div>
+    <div class="card"><h3><span class="lb " data-lang="en">Where to go next</span><span class="lb " data-lang="es">Qué sigue</span></h3><ul class="cons"><li><div class="lb " data-lang="en"><p>Add below-floor query logging to your own rebuild, then read your log after twenty questions. It will change what you think the system&#x27;s problem is.</p></div><div class="lb " data-lang="es"><p>Agregá el logueo de consultas bajo el piso a tu propia reconstrucción y leé tu log después de veinte preguntas. Va a cambiar lo que creés que es el problema del sistema.</p></div></li><li><div class="lb " data-lang="en"><p>Rebuild the splitter to break on headings first and character counts second, then measure whether answers actually improve. Measuring is the harder half.</p></div><div class="lb " data-lang="es"><p>Reconstruí el cortador para partir primero por encabezados y después por cantidad de caracteres, y medí si las respuestas de verdad mejoran. Medir es la mitad más difícil.</p></div></li><li><div class="lb " data-lang="en"><p>Add keyword search alongside the vector search and merge the results. You will immediately discover why deciding how to merge two ranked lists is its own genuine problem.</p></div><div class="lb " data-lang="es"><p>Agregá búsqueda por palabra clave junto a la vectorial y combiná los resultados. Vas a descubrir enseguida por qué decidir cómo combinar dos listas rankeadas es un problema propio y real.</p></div></li></ul></div>
+  </div>
+</section>
+<section id="report" class="sec open" data-sec="report">
+  <h2><span class="secnum">05</span><span class="lb " data-lang="en">Report</span><span class="lb " data-lang="es">Informe</span></h2>
+  <div class="card">
+    <div class="lb " data-lang="en"><p>An honest record of what you have actually reconstructed. Anything marked UNVERIFIED is next week&#x27;s agenda.</p></div><div class="lb " data-lang="es"><p>Un registro honesto de lo que realmente reconstruiste. Todo lo marcado SIN VERIFICAR es la agenda de la semana que viene.</p></div>
+    <div id="reportbody"></div>
+    <button class="btn" id="copyreport"><span class="lb " data-lang="en">Copy report</span><span class="lb " data-lang="es">Copiar informe</span></button>
+  </div>
+  <div class="card final"><div class="lb " data-lang="en"><p>Final act: close this file and explain the whole system out loud in five sentences, with no jargon. If you stall, you have found your next gap.</p></div><div class="lb " data-lang="es"><p>Acto final: cerrá este archivo y explicá el sistema entero en voz alta en cinco oraciones, sin jerga. Si te trabás, encontraste tu próxima laguna.</p></div></div>
+</section></main>
+</div>
+<script>const CFG = {"conceptIds": ["retrieve-before-generate", "chunking", "similarity-floor"], "gapCounts": {"retrieve-before-generate": 4, "chunking": 3, "similarity-floor": 3}, "msCount": 6, "names": {"retrieve-before-generate": {"en": "Look it up, then answer", "es": "Buscar primero, contestar después"}, "chunking": {"en": "Cutting pages into passages", "es": "Cortar páginas en pasajes"}, "similarity-floor": {"en": "The floor that lets it say \"I don't know\"", "es": "El piso que le permite decir \"no sé\""}}, "langs": ["en", "es"], "defaultLang": "en", "systemName": "doc-qa", "ui": {"verified": {"en": "VERIFIED", "es": "VERIFICADO"}, "unverified": {"en": "UNVERIFIED", "es": "SIN VERIFICAR"}, "incomplete": {"en": "NOT STARTED", "es": "SIN EMPEZAR"}, "banned_hit": {"en": "You are hiding behind jargon:", "es": "Te estás escondiendo detrás de jerga:"}, "need_words": {"en": "need", "es": "faltan"}}};</script>
+<script>/* Feynman dossier runtime.
+   Owns: language switching, word gates, jargon detection, sequential unlocking,
+   break-glass accounting, progress, and the honesty report.
+   Storage is best-effort: it upgrades the experience when available and is never required. */
+
+(function () {
+  "use strict";
+
+  var KEY = "feynman:" + (CFG.systemName || "system");
+
+  var mem = {};
+  var store = {
+    get: function () {
+      try {
+        var raw = window.localStorage.getItem(KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) { return mem.data || null; }
+    },
+    set: function (obj) {
+      mem.data = obj;
+      try { window.localStorage.setItem(KEY, JSON.stringify(obj)); } catch (e) { /* in-memory only */ }
+    }
+  };
+
+  var S = store.get() || {};
+  S.lang = S.lang || CFG.defaultLang;
+  S.text = S.text || {};
+  S.submitted = S.submitted || {};
+  S.revealed = S.revealed || {};
+  S.ms = S.ms || {};
+  S.glass = S.glass || {};
+  S.theme = S.theme || "auto";
+
+  function save() { store.set(S); }
+  function words(s) { return (s || "").trim() ? (s || "").trim().split(/\s+/).length : 0; }
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function t(key) { return (CFG.ui[key] && CFG.ui[key][S.lang]) || (CFG.ui[key] && CFG.ui[key].en) || key; }
+
+  /* ---------------- language + theme ---------------- */
+
+  function setLang(lg) {
+    S.lang = lg;
+    document.body.setAttribute("data-lang", lg);
+    document.documentElement.setAttribute("lang", lg);
+    $$(".langbtn").forEach(function (b) {
+      b.classList.toggle("on", b.getAttribute("data-setlang") === lg);
+    });
+    $$(".ta").forEach(function (ta) {
+      var p = ta.getAttribute("data-ph-" + lg);
+      if (p) ta.setAttribute("placeholder", p);
+    });
+    save();
+    refresh();
+  }
+
+  function setTheme(mode) {
+    S.theme = mode;
+    if (mode === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", mode);
+    save();
+  }
+
+  /* ---------------- gates ---------------- */
+
+  function bannedHits(text, terms) {
+    var low = (text || "").toLowerCase();
+    var hits = [];
+    (terms || []).forEach(function (term) {
+      var tl = String(term).toLowerCase();
+      if (tl && low.indexOf(tl) !== -1 && hits.indexOf(term) === -1) hits.push(term);
+    });
+    return hits;
+  }
+
+  function taState(ta) {
+    var key = ta.getAttribute("data-key");
+    var min = parseInt(ta.getAttribute("data-min") || "0", 10);
+    var val = S.text[key] || "";
+    var w = words(val);
+    var hits = [];
+    if (ta.hasAttribute("data-banned-check")) {
+      var host = ta.closest("[data-banned]");
+      if (host) {
+        try { hits = bannedHits(val, JSON.parse(host.getAttribute("data-banned"))); } catch (e) { hits = []; }
+      }
+    }
+    return { key: key, min: min, wordCount: w, hits: hits, ok: w >= min && hits.length === 0 };
+  }
+
+  function blankDone() { return words(S.text["blank"]) >= 60 || !!S.glass["sec:concepts"]; }
+
+  function expDone(cid) { return !!S.submitted[cid + ".exp"] || !!S.glass[cid]; }
+
+  function gapsDone(cid) {
+    var n = CFG.gapCounts[cid] || 0;
+    for (var i = 0; i < n; i++) {
+      if (words(S.text[cid + ".gap" + i]) < 8 && !S.glass[cid]) return false;
+    }
+    return true;
+  }
+
+  function conceptDone(cid) { return expDone(cid) && gapsDone(cid); }
+
+  function allConceptsDone() {
+    return CFG.conceptIds.every(conceptDone) || !!S.glass["sec:rebuild"];
+  }
+
+  function msAllChecked() {
+    for (var i = 0; i < CFG.msCount; i++) if (!S.ms[i]) return false;
+    return true;
+  }
+
+  function sourceUnlocked() {
+    return (!!S.submitted["rebuild.notes"] && msAllChecked() && words(S.text["rebuild.notes"]) >= 80)
+      || !!S.glass["rebuild"];
+  }
+
+  function seniorOpen() { return sourceUnlocked() || !!S.glass["sec:senior"]; }
+
+  /* ---------------- status per section ---------------- */
+  // "v" verified by real work, "u" opened with break-glass, "n" not started
+
+  function statusOf(sec) {
+    switch (sec) {
+      case "blank":
+        return words(S.text["blank"]) >= 60 ? "v" : (words(S.text["blank"]) > 0 ? "n" : "n");
+      case "concepts": {
+        if (S.glass["sec:concepts"] && !CFG.conceptIds.some(function (c) { return S.submitted[c + ".exp"]; })) return "u";
+        var anyGlass = CFG.conceptIds.some(function (c) { return S.glass[c]; });
+        var all = CFG.conceptIds.every(function (c) { return S.submitted[c + ".exp"] && gapsDone(c); });
+        if (all && !anyGlass) return "v";
+        if (anyGlass || CFG.conceptIds.some(function (c) { return S.submitted[c + ".exp"]; })) return "u";
+        return "n";
+      }
+      case "rebuild":
+        if (S.glass["rebuild"] || S.glass["sec:rebuild"]) return "u";
+        return sourceUnlocked() ? "v" : "n";
+      case "senior":
+        if (S.glass["sec:senior"]) return "u";
+        return seniorOpen() ? "v" : "n";
+      default:
+        return "n";
+    }
+  }
+
+  function conceptStatus(cid) {
+    if (S.glass[cid]) return "u";
+    if (conceptDone(cid)) return "v";
+    return "n";
+  }
+
+  /* ---------------- progress ---------------- */
+
+  function progress() {
+    var total = 1, done = 0;
+    if (words(S.text["blank"]) >= 60) done++;
+    CFG.conceptIds.forEach(function (cid) {
+      var n = CFG.gapCounts[cid] || 0;
+      total += 2 + n;                                   // explanation + analogy + gaps
+      if (S.submitted[cid + ".exp"]) done++;
+      if (words(S.text[cid + ".ana"]) >= 15) done++;
+      for (var i = 0; i < n; i++) if (words(S.text[cid + ".gap" + i]) >= 8) done++;
+    });
+    total += CFG.msCount + 1;
+    for (var i = 0; i < CFG.msCount; i++) if (S.ms[i]) done++;
+    if (S.submitted["rebuild.notes"]) done++;
+    return total ? Math.round((done / total) * 100) : 0;
+  }
+
+  /* ---------------- rendering ---------------- */
+
+  function refresh() {
+    // textareas: counters, jargon, submit buttons
+    $$(".ta").forEach(function (ta) {
+      var st = taState(ta);
+      if (ta.value !== (S.text[st.key] || "")) ta.value = S.text[st.key] || "";
+      var wc = $('.wc[data-for="' + CSS.escape(st.key) + '"]');
+      if (wc) wc.textContent = st.wordCount;
+      var short = $('.short[data-for="' + CSS.escape(st.key) + '"]');
+      if (short) short.textContent = st.wordCount < st.min ? ("+" + (st.min - st.wordCount)) : "";
+
+      var jar = $('.jargon[data-for="' + CSS.escape(st.key) + '"]');
+      if (jar) {
+        if (st.hits.length) {
+          jar.classList.add("on");
+          jar.innerHTML = '<div class="jtitle">' + t("banned_hit") + "</div>"
+            + st.hits.map(function (h) { return '<span class="chip">' + h + "</span>"; }).join("")
+            + '<div class="jhelp">' + (S.lang === "es"
+              ? "Estas palabras no están prohibidas para molestarte. Cada una es una caja que no abriste. Decí qué pasa realmente en su lugar."
+              : "These words are not banned to annoy you. Each one is a box you have not opened. Say what physically happens instead.")
+            + "</div>";
+          ta.classList.add("bad");
+        } else {
+          jar.classList.remove("on");
+          jar.innerHTML = "";
+          ta.classList.remove("bad");
+        }
+      }
+
+      var sub = $('[data-submit="' + CSS.escape(st.key) + '"]');
+      if (sub) sub.disabled = !st.ok;
+      var rev = $('[data-reveal="' + CSS.escape(st.key) + '"]');
+      if (rev) rev.disabled = !st.ok;
+    });
+
+    // rebuild unlock button also needs all milestones ticked
+    var rbBtn = $('[data-submit="rebuild.notes"]');
+    if (rbBtn && !rbBtn.disabled) rbBtn.disabled = !msAllChecked();
+
+    // reveal boxes
+    Object.keys(S.revealed).forEach(function (k) {
+      var el = document.getElementById("rev-" + k.replace(/\./g, "-"));
+      if (el && S.revealed[k]) el.classList.add("shown");
+    });
+
+    // section locks
+    var open = {
+      orientation: true, blank: true, report: true,
+      concepts: blankDone(),
+      rebuild: allConceptsDone(),
+      senior: seniorOpen()
+    };
+    $$(".sec").forEach(function (sec) {
+      sec.classList.toggle("open", !!open[sec.getAttribute("data-sec")]);
+    });
+    document.body.classList.toggle("senior-open", seniorOpen());
+
+    // per-concept badges
+    CFG.conceptIds.forEach(function (cid) {
+      var b = $('[data-badge="' + cid + '"]');
+      if (!b) return;
+      var st = conceptStatus(cid);
+      b.className = "badge" + (st === "v" ? " done" : st === "u" ? " unver" : "");
+      b.textContent = st === "v" ? t("verified") : st === "u" ? t("unverified") : "";
+    });
+
+    // milestones
+    $$("[data-ms]").forEach(function (cb) { cb.checked = !!S.ms[cb.getAttribute("data-ms")]; });
+
+    // nav dots
+    $$(".sidenav a").forEach(function (a) {
+      var sec = a.getAttribute("data-nav");
+      var st = statusOf(sec);
+      a.classList.toggle("done", st === "v");
+      a.classList.toggle("unver", st === "u");
+    });
+
+    var p = progress();
+    $("#pbar").style.width = p + "%";
+    $("#ppct").textContent = p + "%";
+
+    renderReport();
+  }
+
+  function renderReport() {
+    var rows = [];
+    function label(st) { return st === "v" ? t("verified") : st === "u" ? t("unverified") : t("incomplete"); }
+    function row(name, st) {
+      rows.push('<div class="rrow"><span>' + name + '</span><span class="rstat ' + st + '">'
+        + label(st) + "</span></div>");
+    }
+    row(S.lang === "es" ? "La hoja en blanco" : "The blank page", statusOf("blank"));
+    CFG.conceptIds.forEach(function (cid) {
+      var nm = CFG.names[cid] || {};
+      row(nm[S.lang] || nm.en || cid, conceptStatus(cid));
+    });
+    row(S.lang === "es" ? "Reconstrucción" : "Rebuild", statusOf("rebuild"));
+    row(S.lang === "es" ? "Registro senior" : "Senior register", statusOf("senior"));
+    var el = $("#reportbody");
+    if (el) el.innerHTML = rows.join("");
+  }
+
+  function reportText() {
+    var out = ["Feynman dossier — " + (CFG.systemName || ""), ""];
+    $$("#reportbody .rrow").forEach(function (r) {
+      out.push("- " + r.children[0].textContent + ": " + r.children[1].textContent);
+    });
+    out.push("", "Progress: " + progress() + "%");
+    return out.join("\n");
+  }
+
+  /* ---------------- events ---------------- */
+
+  document.addEventListener("input", function (e) {
+    var ta = e.target.closest(".ta");
+    if (!ta) return;
+    S.text[ta.getAttribute("data-key")] = ta.value;
+    save();
+    refresh();
+  });
+
+  document.addEventListener("change", function (e) {
+    var cb = e.target.closest("[data-ms]");
+    if (!cb) return;
+    S.ms[cb.getAttribute("data-ms")] = cb.checked;
+    save();
+    refresh();
+  });
+
+  document.addEventListener("click", function (e) {
+    var el;
+
+    if ((el = e.target.closest("[data-setlang]"))) { setLang(el.getAttribute("data-setlang")); return; }
+
+    if (e.target.closest("#themebtn")) {
+      setTheme(S.theme === "auto" ? "light" : S.theme === "light" ? "dark" : "auto");
+      return;
+    }
+
+    if ((el = e.target.closest("[data-submit]"))) {
+      var k = el.getAttribute("data-submit");
+      S.submitted[k] = true;
+      S.revealed[k === "rebuild.notes" ? "rebuild.notes" : k] = true;
+      save(); refresh();
+      var box = document.getElementById("rev-" + k.replace(/\./g, "-"));
+      if (box) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
+    if ((el = e.target.closest("[data-reveal]"))) {
+      S.revealed[el.getAttribute("data-reveal")] = true;
+      save(); refresh();
+      return;
+    }
+
+    if ((el = e.target.closest("[data-glass]"))) {
+      var g = el.getAttribute("data-glass");
+      var msg = S.lang === "es"
+        ? "Esto abre la sección ahora y la deja marcada SIN VERIFICAR para siempre en el informe. Es un registro honesto, no un castigo. ¿Seguir?"
+        : "This opens the section now and permanently marks it UNVERIFIED in your report. It is an honest record, not a punishment. Continue?";
+      if (!window.confirm(msg)) return;
+      S.glass[g] = true;
+      if (g === "rebuild") S.revealed["rebuild.notes"] = true;
+      if (CFG.conceptIds.indexOf(g) !== -1) S.revealed[g + ".exp"] = true;
+      save(); refresh();
+      return;
+    }
+
+    if ((el = e.target.closest(".flashcard"))) { el.classList.toggle("flip"); return; }
+
+    if (e.target.closest("#copyreport")) {
+      var txt = reportText();
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(function () { window.prompt("", txt); });
+      else window.prompt("", txt);
+      return;
+    }
+  });
+
+  // scroll spy
+  var secs = $$(".sec");
+  window.addEventListener("scroll", function () {
+    var best = null, bestTop = Infinity;
+    secs.forEach(function (s) {
+      var top = Math.abs(s.getBoundingClientRect().top - 100);
+      if (top < bestTop) { bestTop = top; best = s.getAttribute("data-sec"); }
+    });
+    $$(".sidenav a").forEach(function (a) {
+      a.classList.toggle("active", a.getAttribute("data-nav") === best);
+    });
+  }, { passive: true });
+
+  // CSS.escape fallback for older engines
+  if (!window.CSS || !window.CSS.escape) {
+    window.CSS = window.CSS || {};
+    window.CSS.escape = function (s) { return String(s).replace(/([^\w-])/g, "\\$1"); };
+  }
+
+  setLang(S.lang);
+  setTheme(S.theme);
+  refresh();
+})();
+</script>
+</body>
+</html>

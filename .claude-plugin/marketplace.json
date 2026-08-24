@@ -1,0 +1,13 @@
+{
+  "name": "feynman-code-tutor",
+  "owner": {
+    "name": "jrobador37"
+  },
+  "plugins": [
+    {
+      "name": "feynman-code-tutor",
+      "source": "./plugins/feynman-code-tutor",
+      "description": "Turns AI-written code into a Feynman-method learning dossier that makes you rebuild the system instead of reading about it."
+    }
+  ]
+}

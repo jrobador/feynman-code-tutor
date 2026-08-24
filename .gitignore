@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.DS_Store
+feynman-*.html
+!examples/*.html
+lesson.json

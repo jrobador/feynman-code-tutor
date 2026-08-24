@@ -1,0 +1,8 @@
+{
+  "name": "feynman-code-tutor",
+  "description": "Turns AI-written code into a Feynman-method learning dossier that makes you rebuild the system instead of reading about it.",
+  "version": "1.0.0",
+  "author": {
+    "name": "jrobador37"
+  }
+}
