@@ -76,7 +76,7 @@ If not, it is trivia. Cut it. Seven shallow concepts teach less than four deep o
 
 Order them so each one only depends on the ones before it.
 
-## Step 3 — For each concept, write the four pieces
+## Step 3 — For each concept, write the five pieces
 
 **The simple explanation.** Common vocabulary only, aimed at a bright twelve-year-old. This is the
 reference the learner compares their own attempt against — so it has to be genuinely simple, not
@@ -90,6 +90,24 @@ pulled from the code's own vocabulary. For a RAG system: `embedding`, `vector`, 
 punishment; it is the moment they discover they were leaning on a word instead of a mechanism.
 Include obvious inflections (`embed`, `embedding`, `embeddings`) — the matcher is substring-based
 and case-insensitive.
+
+**The rubric.** 3-6 boxes. This is what makes a free-form explanation gradeable, and it is the
+hardest of the five to write well, because the obvious version is useless.
+
+A box is a **claim you can hold an answer against**, not a topic. The test: could two people read
+the learner's paragraph and disagree about whether the box is ticked? If yes, rewrite it.
+
+- Useless: `Understands chunking` — a topic. Nothing to check.
+- Useless: `Can answer: how does the overlap work?` — a question, not a claim.
+- Good: `Says the overlap exists so an answer split across a cut is still findable`
+
+Never spend the concept's own banned terms inside a box. The rubric sits on screen while they
+write, so a banned word in it hands them the exact shield the gate exists to remove — the build
+script rejects this rather than letting it through.
+
+The dossier shows these after they submit and **before** the reference, locks the marks on reveal,
+and records a concept as UNVERIFIED when they marked themselves short. That last part is the point:
+a learner who admits they missed something gets a truthful report instead of an agreeable one.
 
 **The gap questions.** 3-5 per concept, each with an answer and a source anchor. Good gap questions
 share a shape: they cannot be answered by pattern-matching the text. Reach for these forms —

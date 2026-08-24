@@ -214,6 +214,23 @@ summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
 .rstat.v{background:var(--ok-soft);color:var(--ok)}
 .rstat.u{background:var(--warn-soft);color:var(--warn)}
 .rstat.n{background:var(--code);color:var(--lock)}
+
+/* ---------- mark yourself, before the reference ---------- */
+.rubricbox{display:none;margin-top:18px;padding:18px 20px;border-radius:12px;
+  border:1px solid var(--accent);background:var(--panel)}
+.rubricbox.shown{display:block}
+.rubricbox h4{margin:0 0 6px}
+.rubricbox .hint{margin-bottom:12px}
+ul.rubric{list-style:none;padding:0;margin:0 0 16px}
+ul.rubric li{display:flex;gap:11px;align-items:flex-start;padding:9px 0;
+  border-bottom:1px solid var(--line)}
+ul.rubric li:last-child{border-bottom:none}
+ul.rubric input{margin-top:5px;width:17px;height:17px;flex:none;accent-color:var(--accent)}
+ul.rubric label{flex:1;cursor:pointer}
+.rubricbox.locked ul.rubric input{opacity:.6;cursor:default}
+.rubricbox.locked ul.rubric label{cursor:default}
+.score{font-family:var(--mono);font-size:13px;color:var(--dim)}
+.score.short{color:var(--accent);font-weight:600}
 </style>
 </head>
 <body data-lang="en">
@@ -267,6 +284,7 @@ summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
       <div class="jargon" data-for="retrieve-before-generate.exp"></div>
       <button class="btn" data-submit="retrieve-before-generate.exp"><span class="lb " data-lang="en">Submit and compare</span><span class="lb " data-lang="es">Enviar y comparar</span></button>
       <button class="btn glass" data-glass="retrieve-before-generate"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button>
+      <div class="rubricbox" id="rub-retrieve-before-generate"><h4><span class="lb " data-lang="en">Mark yourself — before you see the reference</span><span class="lb " data-lang="es">Calificate — antes de ver la referencia</span></h4><div class="hint"><div class="lb " data-lang="en"><p>Tick only what you actually wrote. These lock when you reveal: marking yourself after reading the answer measures nothing except how agreeable you are.</p></div><div class="lb " data-lang="es"><p>Marcá solo lo que realmente escribiste. Se bloquean al revelar: calificarte después de leer la respuesta no mide nada salvo lo complaciente que sos.</p></div></div><ul class="rubric"><li><input type="checkbox" data-mark="retrieve-before-generate" data-box="0"><label><span class="lb " data-lang="en">Says the search happens BEFORE the model is asked anything</span><span class="lb " data-lang="es">Dice que la búsqueda pasa ANTES de preguntarle nada al modelo</span></label></li><li><input type="checkbox" data-mark="retrieve-before-generate" data-box="1"><label><span class="lb " data-lang="en">Says the model is never taught the help pages</span><span class="lb " data-lang="es">Dice que al modelo nunca se le enseñan las páginas de ayuda</span></label></li><li><input type="checkbox" data-mark="retrieve-before-generate" data-box="2"><label><span class="lb " data-lang="en">Names a consequence of that: edits go live without retraining</span><span class="lb " data-lang="es">Nombra una consecuencia: los cambios entran sin reentrenar</span></label></li><li><input type="checkbox" data-mark="retrieve-before-generate" data-box="3"><label><span class="lb " data-lang="en">Says why sending all the pages instead would not work</span><span class="lb " data-lang="es">Dice por qué mandar todas las páginas no funcionaría</span></label></li></ul><button class="btn" data-revealref="retrieve-before-generate"><span class="lb " data-lang="en">Reveal the reference</span><span class="lb " data-lang="es">Ver la referencia</span></button><div class="score" data-score="retrieve-before-generate"></div></div>
       <div class="revealbox" id="rev-retrieve-before-generate-exp">
         <h4><span class="lb " data-lang="en">The reference explanation</span><span class="lb " data-lang="es">La explicación de referencia</span></h4>
         <div class="lb " data-lang="en"><p>Imagine a very sharp student who has to take an exam on a library she has never visited. You have two options. You can make her memorise all 4,000 books, which takes forever and she will still get things wrong. Or you can let her walk in with the exam question, find the three pages that talk about it, and answer with those pages open in front of her.</p><p>This service does the second thing. The model is never taught the help pages. Every time a question comes in, the service finds the handful of passages that are about that question and hands them over with the question. The model&#x27;s job shrinks from *knowing everything* to *reading five short passages and writing a clear answer*, which is something it is very good at.</p></div><div class="lb " data-lang="es"><p>Imaginate una estudiante muy capaz que tiene que rendir un examen sobre una biblioteca que nunca pisó. Tenés dos opciones. Podés hacerla memorizar los 4.000 libros, que tarda una eternidad y aun así se va a equivocar. O podés dejarla entrar con la pregunta del examen, buscar las tres páginas que hablan del tema y contestar con esas páginas abiertas adelante.</p><p>Este servicio hace lo segundo. Al modelo nunca se le enseñan las páginas de ayuda. Cada vez que llega una pregunta, el servicio encuentra el puñado de pasajes que hablan de eso y se los pasa junto con la pregunta. El trabajo del modelo se achica de *saber todo* a *leer cinco pasajes cortos y escribir una respuesta clara*, que es algo que hace muy bien.</p></div>
@@ -336,6 +354,7 @@ summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
       <div class="jargon" data-for="chunking.exp"></div>
       <button class="btn" data-submit="chunking.exp"><span class="lb " data-lang="en">Submit and compare</span><span class="lb " data-lang="es">Enviar y comparar</span></button>
       <button class="btn glass" data-glass="chunking"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button>
+      <div class="rubricbox" id="rub-chunking"><h4><span class="lb " data-lang="en">Mark yourself — before you see the reference</span><span class="lb " data-lang="es">Calificate — antes de ver la referencia</span></h4><div class="hint"><div class="lb " data-lang="en"><p>Tick only what you actually wrote. These lock when you reveal: marking yourself after reading the answer measures nothing except how agreeable you are.</p></div><div class="lb " data-lang="es"><p>Marcá solo lo que realmente escribiste. Se bloquean al revelar: calificarte después de leer la respuesta no mide nada salvo lo complaciente que sos.</p></div></div><ul class="rubric"><li><input type="checkbox" data-mark="chunking" data-box="0"><label><span class="lb " data-lang="en">Says whole pages are cut into smaller pieces before storing</span><span class="lb " data-lang="es">Dice que las páginas se cortan en pedazos antes de guardarse</span></label></li><li><input type="checkbox" data-mark="chunking" data-box="1"><label><span class="lb " data-lang="en">Gives a reason the pieces are small: a whole page buries the answer</span><span class="lb " data-lang="es">Da una razón para que sean chicos: una página entera entierra la respuesta</span></label></li><li><input type="checkbox" data-mark="chunking" data-box="2"><label><span class="lb " data-lang="en">Says consecutive pieces overlap</span><span class="lb " data-lang="es">Dice que los pedazos consecutivos se solapan</span></label></li><li><input type="checkbox" data-mark="chunking" data-box="3"><label><span class="lb " data-lang="en">Says the overlap exists so an answer split across a cut is still findable</span><span class="lb " data-lang="es">Dice que el solape existe para que una respuesta partida al medio siga siendo encontrable</span></label></li></ul><button class="btn" data-revealref="chunking"><span class="lb " data-lang="en">Reveal the reference</span><span class="lb " data-lang="es">Ver la referencia</span></button><div class="score" data-score="chunking"></div></div>
       <div class="revealbox" id="rev-chunking-exp">
         <h4><span class="lb " data-lang="en">The reference explanation</span><span class="lb " data-lang="es">La explicación de referencia</span></h4>
         <div class="lb " data-lang="en"><p>A help page can be six screens long and cover eight unrelated things: how to log in, how to reset a password, what the error codes mean, and so on. If you file the whole page as one item, then its one summary has to stand for all eight topics at once — and a summary of eight things is a good match for none of them.</p><p>So before filing, each page is cut into pieces of roughly a paragraph or two. Each piece is about one thing, so its summary is sharp. The cuts overlap a little, because the sentence that actually answers a question has a habit of landing exactly where you made the cut, and the overlap guarantees at least one piece still contains it whole.</p></div><div class="lb " data-lang="es"><p>Una página de ayuda puede tener seis pantallas de largo y cubrir ocho cosas que no tienen nada que ver: cómo entrar, cómo resetear una contraseña, qué significan los códigos de error, etcétera. Si archivás la página entera como un solo ítem, su único resumen tiene que representar los ocho temas a la vez — y un resumen de ocho cosas no coincide bien con ninguna.</p><p>Así que antes de archivar, cada página se corta en pedazos de más o menos uno o dos párrafos. Cada pedazo habla de una sola cosa, entonces su resumen es filoso. Los cortes se superponen un poco, porque la oración que realmente contesta la pregunta tiene la costumbre de caer justo donde hiciste el corte, y la superposición garantiza que al menos un pedazo la siga teniendo entera.</p></div>
@@ -399,6 +418,7 @@ summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
       <div class="jargon" data-for="similarity-floor.exp"></div>
       <button class="btn" data-submit="similarity-floor.exp"><span class="lb " data-lang="en">Submit and compare</span><span class="lb " data-lang="es">Enviar y comparar</span></button>
       <button class="btn glass" data-glass="similarity-floor"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button>
+      <div class="rubricbox" id="rub-similarity-floor"><h4><span class="lb " data-lang="en">Mark yourself — before you see the reference</span><span class="lb " data-lang="es">Calificate — antes de ver la referencia</span></h4><div class="hint"><div class="lb " data-lang="en"><p>Tick only what you actually wrote. These lock when you reveal: marking yourself after reading the answer measures nothing except how agreeable you are.</p></div><div class="lb " data-lang="es"><p>Marcá solo lo que realmente escribiste. Se bloquean al revelar: calificarte después de leer la respuesta no mide nada salvo lo complaciente que sos.</p></div></div><ul class="rubric"><li><input type="checkbox" data-mark="similarity-floor" data-box="0"><label><span class="lb " data-lang="en">Says the search ALWAYS returns its best guesses, even bad ones</span><span class="lb " data-lang="es">Dice que la búsqueda SIEMPRE devuelve sus mejores intentos, incluso malos</span></label></li><li><input type="checkbox" data-mark="similarity-floor" data-box="1"><label><span class="lb " data-lang="en">Says a result that is not close enough gets thrown away</span><span class="lb " data-lang="es">Dice que un resultado que no se parece lo suficiente se descarta</span></label></li><li><input type="checkbox" data-mark="similarity-floor" data-box="2"><label><span class="lb " data-lang="en">Says that when nothing survives, the model is never called at all</span><span class="lb " data-lang="es">Dice que cuando no sobrevive nada, al modelo no se lo llama</span></label></li><li><input type="checkbox" data-mark="similarity-floor" data-box="3"><label><span class="lb " data-lang="en">Names what the floor prevents: a confident invented answer</span><span class="lb " data-lang="es">Nombra qué evita el piso: una respuesta inventada con seguridad</span></label></li></ul><button class="btn" data-revealref="similarity-floor"><span class="lb " data-lang="en">Reveal the reference</span><span class="lb " data-lang="es">Ver la referencia</span></button><div class="score" data-score="similarity-floor"></div></div>
       <div class="revealbox" id="rev-similarity-floor-exp">
         <h4><span class="lb " data-lang="en">The reference explanation</span><span class="lb " data-lang="es">La explicación de referencia</span></h4>
         <div class="lb " data-lang="en"><p>The search step has no idea whether it did a good job. Ask it for the five closest passages to &quot;how do I reset a password&quot; and it returns five. Ask it the same for &quot;what is the airspeed of a swallow&quot; and it *also* returns five — the five least-unrelated passages it has, because five is what you asked for and it has no way to return &quot;nothing here fits&quot;.</p><p>So the system measures how close each returned passage actually is, on a scale where 1 means &quot;about the same thing&quot; and 0 means &quot;nothing in common&quot;, and throws away everything under 0.72. When that leaves nothing, the service stops right there and says it does not know — it never even asks the model. That refusal is a feature, and it is the difference between a tool people trust and one they learn to double-check.</p></div><div class="lb " data-lang="es"><p>El paso de búsqueda no tiene idea de si hizo un buen trabajo. Pedile los cinco pasajes más cercanos a &quot;cómo reseteo una contraseña&quot; y devuelve cinco. Pedile lo mismo para &quot;cuál es la velocidad de vuelo de una golondrina&quot; y *también* devuelve cinco — los cinco menos irrelevantes que tiene, porque cinco es lo que pediste y no tiene forma de devolver &quot;acá no hay nada que sirva&quot;.</p><p>Entonces el sistema mide qué tan cerca está realmente cada pasaje devuelto, en una escala donde 1 significa &quot;habla de lo mismo&quot; y 0 significa &quot;no tienen nada en común&quot;, y descarta todo lo que esté por debajo de 0,72. Cuando eso no deja nada, el servicio frena ahí y dice que no sabe — ni siquiera le pregunta al modelo. Esa negativa es una función, y es la diferencia entre una herramienta en la que la gente confía y una que aprenden a verificar dos veces.</p></div>
@@ -707,7 +727,7 @@ def ask(question):
   <div class="card final"><div class="lb " data-lang="en"><p>Final act: close this file and explain the whole system out loud in five sentences, with no jargon. If you stall, you have found your next gap.</p></div><div class="lb " data-lang="es"><p>Acto final: cerrá este archivo y explicá el sistema entero en voz alta en cinco oraciones, sin jerga. Si te trabás, encontraste tu próxima laguna.</p></div></div>
 </section></main>
 </div>
-<script>const CFG = {"conceptIds": ["retrieve-before-generate", "chunking", "similarity-floor"], "gapCounts": {"retrieve-before-generate": 4, "chunking": 3, "similarity-floor": 3}, "msCount": 6, "names": {"retrieve-before-generate": {"en": "Look it up, then answer", "es": "Buscar primero, contestar después"}, "chunking": {"en": "Cutting pages into passages", "es": "Cortar páginas en pasajes"}, "similarity-floor": {"en": "The floor that lets it say \"I don't know\"", "es": "El piso que le permite decir \"no sé\""}}, "langs": ["en", "es"], "defaultLang": "en", "systemName": "doc-qa", "ui": {"verified": {"en": "VERIFIED", "es": "VERIFICADO"}, "unverified": {"en": "UNVERIFIED", "es": "SIN VERIFICAR"}, "incomplete": {"en": "NOT STARTED", "es": "SIN EMPEZAR"}, "banned_hit": {"en": "You are hiding behind jargon:", "es": "Te estás escondiendo detrás de jerga:"}, "need_words": {"en": "need", "es": "faltan"}}};</script>
+<script>const CFG = {"conceptIds": ["retrieve-before-generate", "chunking", "similarity-floor"], "gapCounts": {"retrieve-before-generate": 4, "chunking": 3, "similarity-floor": 3}, "rubricCounts": {"retrieve-before-generate": 4, "chunking": 4, "similarity-floor": 4}, "msCount": 6, "names": {"retrieve-before-generate": {"en": "Look it up, then answer", "es": "Buscar primero, contestar después"}, "chunking": {"en": "Cutting pages into passages", "es": "Cortar páginas en pasajes"}, "similarity-floor": {"en": "The floor that lets it say \"I don't know\"", "es": "El piso que le permite decir \"no sé\""}}, "langs": ["en", "es"], "defaultLang": "en", "systemName": "doc-qa", "ui": {"verified": {"en": "VERIFIED", "es": "VERIFICADO"}, "unverified": {"en": "UNVERIFIED", "es": "SIN VERIFICAR"}, "incomplete": {"en": "NOT STARTED", "es": "SIN EMPEZAR"}, "banned_hit": {"en": "You are hiding behind jargon:", "es": "Te estás escondiendo detrás de jerga:"}, "need_words": {"en": "need", "es": "faltan"}, "score": {"en": "boxes", "es": "casillas"}}};</script>
 <script>/* Feynman dossier runtime.
    Owns: language switching, word gates, jargon detection, sequential unlocking,
    break-glass accounting, progress, and the honesty report.
@@ -739,6 +759,8 @@ def ask(question):
   S.revealed = S.revealed || {};
   S.ms = S.ms || {};
   S.glass = S.glass || {};
+  S.marks = S.marks || {};    // per-concept self-marks, ticked before the reveal
+  S.marked = S.marked || {};   // concepts whose marks are locked in
   S.theme = S.theme || "auto";
 
   function save() { store.set(S); }
@@ -800,7 +822,23 @@ def ask(question):
 
   function blankDone() { return words(S.text["blank"]) >= 60 || !!S.glass["sec:concepts"]; }
 
-  function expDone(cid) { return !!S.submitted[cid + ".exp"] || !!S.glass[cid]; }
+  function rubricN(cid) { return (CFG.rubricCounts && CFG.rubricCounts[cid]) || 0; }
+
+  function ticked(cid) {
+    var m = S.marks[cid] || {};
+    return Object.keys(m).filter(function (k) { return m[k]; }).length;
+  }
+
+  /* A rubric turns the explanation into something gradeable, so the reference
+     stays shut until the marks are in. Without a rubric this is the old
+     behaviour: submitting reveals. */
+  function refShown(cid) {
+    if (S.glass[cid]) return true;
+    if (!S.submitted[cid + ".exp"]) return false;
+    return rubricN(cid) ? !!S.marked[cid] : true;
+  }
+
+  function expDone(cid) { return refShown(cid) || !!S.glass[cid]; }
 
   function gapsDone(cid) {
     var n = CFG.gapCounts[cid] || 0;
@@ -858,8 +896,12 @@ def ask(question):
 
   function conceptStatus(cid) {
     if (S.glass[cid]) return "u";
-    if (conceptDone(cid)) return "v";
-    return "n";
+    if (!conceptDone(cid)) return "n";
+    // You said yourself the explanation was missing something. Recording that
+    // as VERIFIED would make the report agree with you instead of with the work.
+    var n = rubricN(cid);
+    if (n && ticked(cid) < n) return "u";
+    return "v";
   }
 
   /* ---------------- progress ---------------- */
@@ -924,6 +966,31 @@ def ask(question):
     Object.keys(S.revealed).forEach(function (k) {
       var el = document.getElementById("rev-" + k.replace(/\./g, "-"));
       if (el && S.revealed[k]) el.classList.add("shown");
+    });
+
+    // the mark-yourself stage sits between submitting and the reference
+    CFG.conceptIds.forEach(function (cid) {
+      var n = rubricN(cid);
+      if (!n) return;
+      var box = document.getElementById("rub-" + cid);
+      if (box) {
+        box.classList.toggle("shown", !!S.submitted[cid + ".exp"] && !S.glass[cid]);
+        box.classList.toggle("locked", !!S.marked[cid]);
+      }
+      $$('[data-mark="' + CSS.escape(cid) + '"]').forEach(function (cb) {
+        cb.checked = !!(S.marks[cid] || {})[cb.getAttribute("data-box")];
+        cb.disabled = !!S.marked[cid];
+      });
+      var btn = $('[data-revealref="' + CSS.escape(cid) + '"]');
+      if (btn) btn.style.display = S.marked[cid] ? "none" : "";
+      var sc = $('.score[data-score="' + CSS.escape(cid) + '"]');
+      if (sc) {
+        sc.textContent = S.marked[cid] ? (ticked(cid) + "/" + n + " " + t("score")) : "";
+        sc.classList.toggle("short", S.marked[cid] && ticked(cid) < n);
+      }
+      // the reference only opens once the marks are locked
+      var ref = document.getElementById("rev-" + cid + "-exp");
+      if (ref && !refShown(cid)) ref.classList.remove("shown");
     });
 
     // section locks
@@ -1014,10 +1081,19 @@ def ask(question):
 
   document.addEventListener("change", function (e) {
     var cb = e.target.closest("[data-ms]");
-    if (!cb) return;
-    S.ms[cb.getAttribute("data-ms")] = cb.checked;
-    save();
-    refresh();
+    if (cb) {
+      S.ms[cb.getAttribute("data-ms")] = cb.checked;
+      save(); refresh();
+      return;
+    }
+    var mk = e.target.closest("[data-mark]");
+    if (mk) {
+      var cid = mk.getAttribute("data-mark");
+      if (S.marked[cid]) { mk.checked = !mk.checked; return; }   // locked
+      S.marks[cid] = S.marks[cid] || {};
+      S.marks[cid][mk.getAttribute("data-box")] = mk.checked;
+      save(); refresh();
+    }
   });
 
   document.addEventListener("click", function (e) {
@@ -1033,10 +1109,24 @@ def ask(question):
     if ((el = e.target.closest("[data-submit]"))) {
       var k = el.getAttribute("data-submit");
       S.submitted[k] = true;
-      S.revealed[k === "rebuild.notes" ? "rebuild.notes" : k] = true;
+      var cid = k.indexOf(".exp") > 0 ? k.slice(0, k.indexOf(".exp")) : null;
+      // With a rubric, submitting opens the marking stage, not the answer.
+      var toRubric = cid && rubricN(cid) && !S.marked[cid];
+      if (!toRubric) S.revealed[k] = true;
       save(); refresh();
-      var box = document.getElementById("rev-" + k.replace(/\./g, "-"));
+      var box = document.getElementById(
+        toRubric ? "rub-" + cid : "rev-" + k.replace(/\./g, "-"));
       if (box) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
+    if ((el = e.target.closest("[data-revealref]"))) {
+      var rc = el.getAttribute("data-revealref");
+      S.marked[rc] = true;              // locks the marks; they cannot be edited after
+      S.revealed[rc + ".exp"] = true;
+      save(); refresh();
+      var rb = document.getElementById("rev-" + rc + "-exp");
+      if (rb) rb.scrollIntoView({ behavior: "smooth", block: "nearest" });
       return;
     }
 
@@ -1054,7 +1144,7 @@ def ask(question):
       if (!window.confirm(msg)) return;
       S.glass[g] = true;
       if (g === "rebuild") S.revealed["rebuild.notes"] = true;
-      if (CFG.conceptIds.indexOf(g) !== -1) S.revealed[g + ".exp"] = true;
+      if (CFG.conceptIds.indexOf(g) !== -1) { S.revealed[g + ".exp"] = true; S.marked[g] = true; }
       save(); refresh();
       return;
     }

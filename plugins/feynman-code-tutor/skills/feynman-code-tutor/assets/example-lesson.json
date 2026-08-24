@@ -11,10 +11,12 @@
     "system_name": "doc-qa",
     "source_root": "src/",
     "default_lang": "en",
-    "languages": ["en", "es"],
+    "languages": [
+      "en",
+      "es"
+    ],
     "estimated_minutes": 110
   },
-
   "orientation": {
     "problem": {
       "en": "A support team has 4,000 internal help pages. People ask questions in their own words, and the answers exist somewhere in those pages, but nobody can find them. A language model on its own cannot help: it has never read those pages, and pasting all 4,000 into every question is far too much text for it to accept.",
@@ -25,38 +27,159 @@
       "es": "Un servicio web chico con dos trabajos. La **ingesta** corre una sola vez: lee cada página de ayuda, la corta en pasajes que se superponen, convierte cada pasaje en una lista de números que captura su significado y los archiva en una base de datos que encuentra listas parecidas rápido.\n\nLa **respuesta** corre en cada pregunta: convierte la pregunta en el mismo tipo de lista de números, le pide a la base los cinco pasajes más cercanos, pega solamente esos cinco en un prompt y le pide al modelo que responda usando nada más que ese texto."
     },
     "files": [
-      {"path": "src/ingest.py", "role": {"en": "Reads the help pages, splits them, and writes them into the store. Run manually, not per request.", "es": "Lee las páginas de ayuda, las parte y las escribe en el almacén. Se corre a mano, no en cada request."}},
-      {"path": "src/chunker.py", "role": {"en": "Cuts a long page into overlapping passages of roughly 800 characters.", "es": "Corta una página larga en pasajes superpuestos de unos 800 caracteres."}},
-      {"path": "src/store.py", "role": {"en": "Wraps Postgres + pgvector. Two functions: `add()` and `search()`.", "es": "Envuelve Postgres + pgvector. Dos funciones: `add()` y `search()`."}},
-      {"path": "src/answer.py", "role": {"en": "The per-question path: search, build the prompt, call the model, return the answer with its sources.", "es": "El camino por pregunta: buscar, armar el prompt, llamar al modelo, devolver la respuesta con sus fuentes."}},
-      {"path": "src/api.py", "role": {"en": "One FastAPI endpoint, `POST /ask`. Validation and error shaping only.", "es": "Un endpoint de FastAPI, `POST /ask`. Solo validación y forma de los errores."}}
+      {
+        "path": "src/ingest.py",
+        "role": {
+          "en": "Reads the help pages, splits them, and writes them into the store. Run manually, not per request.",
+          "es": "Lee las páginas de ayuda, las parte y las escribe en el almacén. Se corre a mano, no en cada request."
+        }
+      },
+      {
+        "path": "src/chunker.py",
+        "role": {
+          "en": "Cuts a long page into overlapping passages of roughly 800 characters.",
+          "es": "Corta una página larga en pasajes superpuestos de unos 800 caracteres."
+        }
+      },
+      {
+        "path": "src/store.py",
+        "role": {
+          "en": "Wraps Postgres + pgvector. Two functions: `add()` and `search()`.",
+          "es": "Envuelve Postgres + pgvector. Dos funciones: `add()` y `search()`."
+        }
+      },
+      {
+        "path": "src/answer.py",
+        "role": {
+          "en": "The per-question path: search, build the prompt, call the model, return the answer with its sources.",
+          "es": "El camino por pregunta: buscar, armar el prompt, llamar al modelo, devolver la respuesta con sus fuentes."
+        }
+      },
+      {
+        "path": "src/api.py",
+        "role": {
+          "en": "One FastAPI endpoint, `POST /ask`. Validation and error shaping only.",
+          "es": "Un endpoint de FastAPI, `POST /ask`. Solo validación y forma de los errores."
+        }
+      }
     ],
     "dataflow": [
-      {"step": {"en": "A question arrives as JSON: `{\"q\": \"how do I reset a customer password?\"}`. It is trimmed and rejected if empty or over 500 characters.", "es": "Llega una pregunta como JSON: `{\"q\": \"cómo reseteo la contraseña de un cliente?\"}`. Se recorta y se rechaza si está vacía o pasa los 500 caracteres."}, "anchor": "src/api.py:18"},
-      {"step": {"en": "The question text is sent to the embedding model and comes back as 1,536 numbers.", "es": "El texto de la pregunta va al modelo de embeddings y vuelve como 1.536 números."}, "anchor": "src/answer.py:22"},
-      {"step": {"en": "Those numbers go to `store.search(vec, k=5)`, which returns the five passages whose own numbers point in the most similar direction.", "es": "Esos números van a `store.search(vec, k=5)`, que devuelve los cinco pasajes cuyos números apuntan en la dirección más parecida."}, "anchor": "src/store.py:41"},
-      {"step": {"en": "Any passage whose similarity score is below 0.72 is dropped. If nothing survives, the service answers \"I don't know\" and never calls the model.", "es": "Se descarta todo pasaje con score de similitud por debajo de 0,72. Si no sobrevive nada, el servicio contesta \"no sé\" y nunca llama al modelo."}, "anchor": "src/answer.py:31"},
-      {"step": {"en": "The survivors are pasted into a prompt template that tells the model to answer only from the given text and to say so if the text does not contain the answer.", "es": "Los sobrevivientes se pegan en una plantilla de prompt que le dice al modelo que responda solo con el texto dado y que avise si ese texto no tiene la respuesta."}, "anchor": "src/answer.py:44"},
-      {"step": {"en": "The model's reply plus the source page URLs are returned to the caller.", "es": "La respuesta del modelo más las URLs de las páginas fuente vuelven a quien preguntó."}, "anchor": "src/answer.py:58"}
+      {
+        "step": {
+          "en": "A question arrives as JSON: `{\"q\": \"how do I reset a customer password?\"}`. It is trimmed and rejected if empty or over 500 characters.",
+          "es": "Llega una pregunta como JSON: `{\"q\": \"cómo reseteo la contraseña de un cliente?\"}`. Se recorta y se rechaza si está vacía o pasa los 500 caracteres."
+        },
+        "anchor": "src/api.py:18"
+      },
+      {
+        "step": {
+          "en": "The question text is sent to the embedding model and comes back as 1,536 numbers.",
+          "es": "El texto de la pregunta va al modelo de embeddings y vuelve como 1.536 números."
+        },
+        "anchor": "src/answer.py:22"
+      },
+      {
+        "step": {
+          "en": "Those numbers go to `store.search(vec, k=5)`, which returns the five passages whose own numbers point in the most similar direction.",
+          "es": "Esos números van a `store.search(vec, k=5)`, que devuelve los cinco pasajes cuyos números apuntan en la dirección más parecida."
+        },
+        "anchor": "src/store.py:41"
+      },
+      {
+        "step": {
+          "en": "Any passage whose similarity score is below 0.72 is dropped. If nothing survives, the service answers \"I don't know\" and never calls the model.",
+          "es": "Se descarta todo pasaje con score de similitud por debajo de 0,72. Si no sobrevive nada, el servicio contesta \"no sé\" y nunca llama al modelo."
+        },
+        "anchor": "src/answer.py:31"
+      },
+      {
+        "step": {
+          "en": "The survivors are pasted into a prompt template that tells the model to answer only from the given text and to say so if the text does not contain the answer.",
+          "es": "Los sobrevivientes se pegan en una plantilla de prompt que le dice al modelo que responda solo con el texto dado y que avise si ese texto no tiene la respuesta."
+        },
+        "anchor": "src/answer.py:44"
+      },
+      {
+        "step": {
+          "en": "The model's reply plus the source page URLs are returned to the caller.",
+          "es": "La respuesta del modelo más las URLs de las páginas fuente vuelven a quien preguntó."
+        },
+        "anchor": "src/answer.py:58"
+      }
     ],
     "decisions": [
-      {"choice": {"en": "Passages overlap by 150 characters", "es": "Los pasajes se superponen 150 caracteres"}, "why": {"en": "A sentence that answers the question can straddle a cut. Overlap means at least one passage contains it whole.", "es": "La oración que contesta la pregunta puede quedar partida por un corte. La superposición garantiza que al menos un pasaje la tenga entera."}, "instead_of": {"en": "clean non-overlapping cuts", "es": "cortes limpios sin superposición"}, "anchor": "src/chunker.py:14"},
-      {"choice": {"en": "A hard similarity floor of 0.72", "es": "Un piso duro de similitud de 0,72"}, "why": {"en": "Without it the search always returns its five best matches, even when all five are irrelevant, and the model then invents an answer from unrelated text.", "es": "Sin él la búsqueda siempre devuelve sus cinco mejores, aunque los cinco sean irrelevantes, y entonces el modelo inventa una respuesta a partir de texto que no viene al caso."}, "instead_of": {"en": "always passing the top 5", "es": "pasar siempre el top 5"}, "anchor": "src/answer.py:31"},
-      {"choice": {"en": "Postgres with pgvector instead of a dedicated vector database", "es": "Postgres con pgvector en vez de una base vectorial dedicada"}, "why": {"en": "The team already runs Postgres, backs it up, and knows how to debug it. 4,000 pages is far below the scale where a specialised store pays for its extra operational surface.", "es": "El equipo ya corre Postgres, lo respalda y sabe debuggearlo. 4.000 páginas está muy por debajo de la escala donde un almacén especializado justifica su superficie operativa extra."}, "instead_of": {"en": "Pinecone, Weaviate, or Qdrant", "es": "Pinecone, Weaviate o Qdrant"}, "anchor": "src/store.py:9"}
+      {
+        "choice": {
+          "en": "Passages overlap by 150 characters",
+          "es": "Los pasajes se superponen 150 caracteres"
+        },
+        "why": {
+          "en": "A sentence that answers the question can straddle a cut. Overlap means at least one passage contains it whole.",
+          "es": "La oración que contesta la pregunta puede quedar partida por un corte. La superposición garantiza que al menos un pasaje la tenga entera."
+        },
+        "instead_of": {
+          "en": "clean non-overlapping cuts",
+          "es": "cortes limpios sin superposición"
+        },
+        "anchor": "src/chunker.py:14"
+      },
+      {
+        "choice": {
+          "en": "A hard similarity floor of 0.72",
+          "es": "Un piso duro de similitud de 0,72"
+        },
+        "why": {
+          "en": "Without it the search always returns its five best matches, even when all five are irrelevant, and the model then invents an answer from unrelated text.",
+          "es": "Sin él la búsqueda siempre devuelve sus cinco mejores, aunque los cinco sean irrelevantes, y entonces el modelo inventa una respuesta a partir de texto que no viene al caso."
+        },
+        "instead_of": {
+          "en": "always passing the top 5",
+          "es": "pasar siempre el top 5"
+        },
+        "anchor": "src/answer.py:31"
+      },
+      {
+        "choice": {
+          "en": "Postgres with pgvector instead of a dedicated vector database",
+          "es": "Postgres con pgvector en vez de una base vectorial dedicada"
+        },
+        "why": {
+          "en": "The team already runs Postgres, backs it up, and knows how to debug it. 4,000 pages is far below the scale where a specialised store pays for its extra operational surface.",
+          "es": "El equipo ya corre Postgres, lo respalda y sabe debuggearlo. 4.000 páginas está muy por debajo de la escala donde un almacén especializado justifica su superficie operativa extra."
+        },
+        "instead_of": {
+          "en": "Pinecone, Weaviate, or Qdrant",
+          "es": "Pinecone, Weaviate o Qdrant"
+        },
+        "anchor": "src/store.py:9"
+      }
     ]
   },
-
   "prior_knowledge_prompt": {
     "en": "Before you open anything else: write down, from memory alone, how you think this service answers a question. Do not look at the code. Include the parts you are unsure about and mark them with a question mark — those marks are the most valuable thing on this page, because they are the map of what you are about to learn.",
     "es": "Antes de abrir nada más: escribí, solo de memoria, cómo creés que este servicio contesta una pregunta. No mires el código. Incluí las partes de las que no estás seguro y marcalas con un signo de pregunta — esas marcas son lo más valioso de esta página, porque son el mapa de lo que estás por aprender."
   },
-
   "concepts": [
     {
       "id": "retrieve-before-generate",
-      "name": {"en": "Look it up, then answer", "es": "Buscar primero, contestar después"},
-      "one_liner": {"en": "How does a model answer questions about documents it has never read?", "es": "¿Cómo contesta un modelo preguntas sobre documentos que nunca leyó?"},
-      "banned_terms": ["embed", "vector", "semantic", "retrieval", "RAG", "similarity", "index", "corpus"],
+      "name": {
+        "en": "Look it up, then answer",
+        "es": "Buscar primero, contestar después"
+      },
+      "one_liner": {
+        "en": "How does a model answer questions about documents it has never read?",
+        "es": "¿Cómo contesta un modelo preguntas sobre documentos que nunca leyó?"
+      },
+      "banned_terms": [
+        "embed",
+        "vector",
+        "semantic",
+        "retrieval",
+        "RAG",
+        "similarity",
+        "index",
+        "corpus"
+      ],
       "simple_explanation": {
         "en": "Imagine a very sharp student who has to take an exam on a library she has never visited. You have two options. You can make her memorise all 4,000 books, which takes forever and she will still get things wrong. Or you can let her walk in with the exam question, find the three pages that talk about it, and answer with those pages open in front of her.\n\nThis service does the second thing. The model is never taught the help pages. Every time a question comes in, the service finds the handful of passages that are about that question and hands them over with the question. The model's job shrinks from *knowing everything* to *reading five short passages and writing a clear answer*, which is something it is very good at.",
         "es": "Imaginate una estudiante muy capaz que tiene que rendir un examen sobre una biblioteca que nunca pisó. Tenés dos opciones. Podés hacerla memorizar los 4.000 libros, que tarda una eternidad y aun así se va a equivocar. O podés dejarla entrar con la pregunta del examen, buscar las tres páginas que hablan del tema y contestar con esas páginas abiertas adelante.\n\nEste servicio hace lo segundo. Al modelo nunca se le enseñan las páginas de ayuda. Cada vez que llega una pregunta, el servicio encuentra el puñado de pasajes que hablan de eso y se los pasa junto con la pregunta. El trabajo del modelo se achica de *saber todo* a *leer cinco pasajes cortos y escribir una respuesta clara*, que es algo que hace muy bien."
@@ -72,106 +195,551 @@
         }
       },
       "gap_questions": [
-        {"q": {"en": "The service never trains the model on the help pages. Name two concrete things this buys you when a help page is edited on a Tuesday afternoon.", "es": "El servicio nunca entrena el modelo con las páginas de ayuda. Nombrá dos cosas concretas que ganás con eso cuando editan una página un martes a la tarde."}, "a": {"en": "The edit is live as soon as ingestion reruns for that page — minutes, not a training cycle — and it costs one embedding call rather than a fine-tune. You also get deletion for free: removing a page removes its passages, whereas a trained model cannot forget on request.", "es": "El cambio está vivo apenas se reejecuta la ingesta de esa página — minutos, no un ciclo de entrenamiento — y cuesta una llamada de embedding en vez de un fine-tune. Además el borrado sale gratis: eliminar una página elimina sus pasajes, mientras que un modelo entrenado no puede olvidar a pedido."}, "anchor": "src/ingest.py:28"},
-        {"q": {"en": "Delete the search step and paste all 4,000 pages into the prompt instead. Name the two separate things that break.", "es": "Borrá el paso de búsqueda y pegá las 4.000 páginas en el prompt. Nombrá las dos cosas distintas que se rompen."}, "a": {"en": "First, it does not fit — the request exceeds the model's context limit and fails outright. Second, even if it fit, cost and latency scale with every page on every question, and answer quality *drops*, because the relevant sentence is buried in millions of irrelevant tokens.", "es": "Primero, no entra — el request supera el límite de contexto del modelo y falla directamente. Segundo, aunque entrara, el costo y la latencia escalan con cada página en cada pregunta, y la calidad *baja*, porque la oración relevante queda enterrada entre millones de tokens irrelevantes."}, "anchor": "src/answer.py:44"},
-        {"q": {"en": "A user asks something the help pages genuinely do not cover. Walk through what happens, line by line, and say where it stops.", "es": "Un usuario pregunta algo que las páginas realmente no cubren. Recorré qué pasa, línea por línea, y decí dónde se frena."}, "a": {"en": "Search still returns five passages — it always returns its best guesses. Every score falls under 0.72, the filter empties the list, and the code returns a fixed \"I don't know\" without ever calling the model. That early return is the only thing standing between the user and a confident fabrication.", "es": "La búsqueda igual devuelve cinco pasajes — siempre devuelve sus mejores tentativas. Todos los scores caen por debajo de 0,72, el filtro vacía la lista y el código devuelve un \"no sé\" fijo sin llamar nunca al modelo. Ese return temprano es lo único que separa al usuario de una fabricación dicha con total seguridad."}, "anchor": "src/answer.py:31"},
-        {"q": {"en": "Why does the response include source URLs? Give a reason that is about the system, not about being polite to users.", "es": "¿Por qué la respuesta incluye las URLs de las fuentes? Dá una razón sobre el sistema, no sobre ser amable con el usuario."}, "a": {"en": "They make the system debuggable. When an answer is wrong you need to know whether search brought back the wrong passages or the model misread the right ones — those two failures have completely different fixes, and without the sources you cannot tell them apart.", "es": "Hacen el sistema debuggeable. Cuando una respuesta está mal necesitás saber si la búsqueda trajo los pasajes equivocados o si el modelo leyó mal los correctos — esas dos fallas se arreglan de maneras completamente distintas, y sin las fuentes no las podés distinguir."}, "anchor": "src/answer.py:58"}
+        {
+          "q": {
+            "en": "The service never trains the model on the help pages. Name two concrete things this buys you when a help page is edited on a Tuesday afternoon.",
+            "es": "El servicio nunca entrena el modelo con las páginas de ayuda. Nombrá dos cosas concretas que ganás con eso cuando editan una página un martes a la tarde."
+          },
+          "a": {
+            "en": "The edit is live as soon as ingestion reruns for that page — minutes, not a training cycle — and it costs one embedding call rather than a fine-tune. You also get deletion for free: removing a page removes its passages, whereas a trained model cannot forget on request.",
+            "es": "El cambio está vivo apenas se reejecuta la ingesta de esa página — minutos, no un ciclo de entrenamiento — y cuesta una llamada de embedding en vez de un fine-tune. Además el borrado sale gratis: eliminar una página elimina sus pasajes, mientras que un modelo entrenado no puede olvidar a pedido."
+          },
+          "anchor": "src/ingest.py:28"
+        },
+        {
+          "q": {
+            "en": "Delete the search step and paste all 4,000 pages into the prompt instead. Name the two separate things that break.",
+            "es": "Borrá el paso de búsqueda y pegá las 4.000 páginas en el prompt. Nombrá las dos cosas distintas que se rompen."
+          },
+          "a": {
+            "en": "First, it does not fit — the request exceeds the model's context limit and fails outright. Second, even if it fit, cost and latency scale with every page on every question, and answer quality *drops*, because the relevant sentence is buried in millions of irrelevant tokens.",
+            "es": "Primero, no entra — el request supera el límite de contexto del modelo y falla directamente. Segundo, aunque entrara, el costo y la latencia escalan con cada página en cada pregunta, y la calidad *baja*, porque la oración relevante queda enterrada entre millones de tokens irrelevantes."
+          },
+          "anchor": "src/answer.py:44"
+        },
+        {
+          "q": {
+            "en": "A user asks something the help pages genuinely do not cover. Walk through what happens, line by line, and say where it stops.",
+            "es": "Un usuario pregunta algo que las páginas realmente no cubren. Recorré qué pasa, línea por línea, y decí dónde se frena."
+          },
+          "a": {
+            "en": "Search still returns five passages — it always returns its best guesses. Every score falls under 0.72, the filter empties the list, and the code returns a fixed \"I don't know\" without ever calling the model. That early return is the only thing standing between the user and a confident fabrication.",
+            "es": "La búsqueda igual devuelve cinco pasajes — siempre devuelve sus mejores tentativas. Todos los scores caen por debajo de 0,72, el filtro vacía la lista y el código devuelve un \"no sé\" fijo sin llamar nunca al modelo. Ese return temprano es lo único que separa al usuario de una fabricación dicha con total seguridad."
+          },
+          "anchor": "src/answer.py:31"
+        },
+        {
+          "q": {
+            "en": "Why does the response include source URLs? Give a reason that is about the system, not about being polite to users.",
+            "es": "¿Por qué la respuesta incluye las URLs de las fuentes? Dá una razón sobre el sistema, no sobre ser amable con el usuario."
+          },
+          "a": {
+            "en": "They make the system debuggable. When an answer is wrong you need to know whether search brought back the wrong passages or the model misread the right ones — those two failures have completely different fixes, and without the sources you cannot tell them apart.",
+            "es": "Hacen el sistema debuggeable. Cuando una respuesta está mal necesitás saber si la búsqueda trajo los pasajes equivocados o si el modelo leyó mal los correctos — esas dos fallas se arreglan de maneras completamente distintas, y sin las fuentes no las podés distinguir."
+          },
+          "anchor": "src/answer.py:58"
+        }
       ],
       "senior": {
-        "tradeoff": {"en": "You trade a training cost you pay once for a search cost you pay on every single request, and you accept that answer quality is now capped by retrieval quality. In exchange you get freshness measured in minutes, per-document deletion, and citations. For a corpus that changes weekly, that is the right side of the trade; for a static corpus queried millions of times a day it is arguable.", "es": "Cambiás un costo de entrenamiento que pagás una vez por un costo de búsqueda que pagás en cada request, y aceptás que la calidad de la respuesta queda limitada por la calidad de la búsqueda. A cambio obtenés frescura medida en minutos, borrado por documento y citas. Para un corpus que cambia todas las semanas es el lado correcto del trade; para un corpus estático con millones de consultas diarias es discutible."},
+        "tradeoff": {
+          "en": "You trade a training cost you pay once for a search cost you pay on every single request, and you accept that answer quality is now capped by retrieval quality. In exchange you get freshness measured in minutes, per-document deletion, and citations. For a corpus that changes weekly, that is the right side of the trade; for a static corpus queried millions of times a day it is arguable.",
+          "es": "Cambiás un costo de entrenamiento que pagás una vez por un costo de búsqueda que pagás en cada request, y aceptás que la calidad de la respuesta queda limitada por la calidad de la búsqueda. A cambio obtenés frescura medida en minutos, borrado por documento y citas. Para un corpus que cambia todas las semanas es el lado correcto del trade; para un corpus estático con millones de consultas diarias es discutible."
+        },
         "failure_modes": [
-          {"mode": {"en": "Retrieval miss on vocabulary mismatch", "es": "Fallo de búsqueda por vocabulario distinto"}, "symptom": {"en": "The answer exists in the corpus but the service says it does not know. Users report it as \"the bot is dumb\".", "es": "La respuesta existe en el corpus pero el servicio dice que no sabe. Los usuarios lo reportan como \"el bot es tonto\"."}, "mitigation": {"en": "Log every below-floor query. That log is a ranked list of exactly what to fix — usually by adding a hybrid keyword search alongside the vector search rather than by lowering the floor.", "es": "Loguear toda consulta que quede bajo el piso. Ese log es una lista priorizada de qué arreglar — normalmente agregando búsqueda por palabra clave en paralelo a la vectorial, no bajando el piso."}},
-          {"mode": {"en": "Confidently wrong answer from plausible-but-wrong passages", "es": "Respuesta segura pero equivocada desde pasajes plausibles pero incorrectos"}, "symptom": {"en": "Fluent answer, real citations, wrong content — typically when two help pages describe near-identical flows for different products.", "es": "Respuesta fluida, citas reales, contenido equivocado — típicamente cuando dos páginas describen flujos casi idénticos para productos distintos."}, "mitigation": {"en": "Filter by product metadata before the similarity search rather than hoping the vectors separate them. Metadata filters are cheap and exact; vectors are neither.", "es": "Filtrar por metadata de producto antes de la búsqueda por similitud en vez de esperar que los vectores los separen. Los filtros de metadata son baratos y exactos; los vectores no son ninguna de las dos cosas."}}
+          {
+            "mode": {
+              "en": "Retrieval miss on vocabulary mismatch",
+              "es": "Fallo de búsqueda por vocabulario distinto"
+            },
+            "symptom": {
+              "en": "The answer exists in the corpus but the service says it does not know. Users report it as \"the bot is dumb\".",
+              "es": "La respuesta existe en el corpus pero el servicio dice que no sabe. Los usuarios lo reportan como \"el bot es tonto\"."
+            },
+            "mitigation": {
+              "en": "Log every below-floor query. That log is a ranked list of exactly what to fix — usually by adding a hybrid keyword search alongside the vector search rather than by lowering the floor.",
+              "es": "Loguear toda consulta que quede bajo el piso. Ese log es una lista priorizada de qué arreglar — normalmente agregando búsqueda por palabra clave en paralelo a la vectorial, no bajando el piso."
+            }
+          },
+          {
+            "mode": {
+              "en": "Confidently wrong answer from plausible-but-wrong passages",
+              "es": "Respuesta segura pero equivocada desde pasajes plausibles pero incorrectos"
+            },
+            "symptom": {
+              "en": "Fluent answer, real citations, wrong content — typically when two help pages describe near-identical flows for different products.",
+              "es": "Respuesta fluida, citas reales, contenido equivocado — típicamente cuando dos páginas describen flujos casi idénticos para productos distintos."
+            },
+            "mitigation": {
+              "en": "Filter by product metadata before the similarity search rather than hoping the vectors separate them. Metadata filters are cheap and exact; vectors are neither.",
+              "es": "Filtrar por metadata de producto antes de la búsqueda por similitud en vez de esperar que los vectores los separen. Los filtros de metadata son baratos y exactos; los vectores no son ninguna de las dos cosas."
+            }
+          }
         ],
-        "cost_complexity": {"en": "Two model calls per question (one embedding, one generation) plus one indexed database query. The embedding call is roughly a thousandth of the generation cost and can be cached by exact question text, which in a support tool with repeated questions is a real win. Ingestion is O(pages) and runs offline.", "es": "Dos llamadas al modelo por pregunta (una de embedding, una de generación) más una consulta indexada a la base. La llamada de embedding cuesta cerca de una milésima de la de generación y se puede cachear por texto exacto de la pregunta, que en una herramienta de soporte con preguntas repetidas es una ganancia real. La ingesta es O(páginas) y corre offline."},
-        "at_scale": {"en": "At 4,000 pages an exact scan over pgvector is fine. Past roughly a million passages you need an approximate index (HNSW or IVFFlat), and the moment you add one you have accepted recall below 100% — so that is the point where the below-floor log stops being a nice-to-have and becomes your primary quality signal.", "es": "Con 4.000 páginas un escaneo exacto sobre pgvector está bien. Pasado el millón de pasajes necesitás un índice aproximado (HNSW o IVFFlat), y en el momento en que agregás uno aceptaste recall por debajo del 100% — así que ahí es donde el log de consultas bajo el piso deja de ser un lujo y pasa a ser tu señal principal de calidad."},
+        "cost_complexity": {
+          "en": "Two model calls per question (one embedding, one generation) plus one indexed database query. The embedding call is roughly a thousandth of the generation cost and can be cached by exact question text, which in a support tool with repeated questions is a real win. Ingestion is O(pages) and runs offline.",
+          "es": "Dos llamadas al modelo por pregunta (una de embedding, una de generación) más una consulta indexada a la base. La llamada de embedding cuesta cerca de una milésima de la de generación y se puede cachear por texto exacto de la pregunta, que en una herramienta de soporte con preguntas repetidas es una ganancia real. La ingesta es O(páginas) y corre offline."
+        },
+        "at_scale": {
+          "en": "At 4,000 pages an exact scan over pgvector is fine. Past roughly a million passages you need an approximate index (HNSW or IVFFlat), and the moment you add one you have accepted recall below 100% — so that is the point where the below-floor log stops being a nice-to-have and becomes your primary quality signal.",
+          "es": "Con 4.000 páginas un escaneo exacto sobre pgvector está bien. Pasado el millón de pasajes necesitás un índice aproximado (HNSW o IVFFlat), y en el momento en que agregás uno aceptaste recall por debajo del 100% — así que ahí es donde el log de consultas bajo el piso deja de ser un lujo y pasa a ser tu señal principal de calidad."
+        },
         "alternatives": [
-          {"option": {"en": "Fine-tune a model on the help pages", "es": "Hacer fine-tune de un modelo con las páginas de ayuda"}, "why_not": {"en": "It cannot cite, cannot forget a deleted page, and goes stale the moment anyone edits documentation. It also fails silently: a stale fine-tune sounds exactly as confident as a fresh one.", "es": "No puede citar, no puede olvidar una página borrada y queda obsoleto apenas alguien edita la documentación. Además falla en silencio: un fine-tune viejo suena exactamente igual de seguro que uno fresco."}},
-          {"option": {"en": "Plain keyword search feeding the same prompt", "es": "Búsqueda por palabra clave común alimentando el mismo prompt"}, "why_not": {"en": "It is cheaper and genuinely better for exact identifiers and error codes — which is why the honest end state here is both, not one. It was skipped in v1 only because support questions are paraphrase-heavy, and that is a decision worth revisiting with the below-floor log in hand.", "es": "Es más barata y de verdad mejor para identificadores exactos y códigos de error — por eso el final honesto acá es tener las dos, no una. Se salteó en la v1 solo porque las preguntas de soporte son muy parafraseadas, y es una decisión que vale la pena revisar con el log de consultas bajo el piso en la mano."}}
+          {
+            "option": {
+              "en": "Fine-tune a model on the help pages",
+              "es": "Hacer fine-tune de un modelo con las páginas de ayuda"
+            },
+            "why_not": {
+              "en": "It cannot cite, cannot forget a deleted page, and goes stale the moment anyone edits documentation. It also fails silently: a stale fine-tune sounds exactly as confident as a fresh one.",
+              "es": "No puede citar, no puede olvidar una página borrada y queda obsoleto apenas alguien edita la documentación. Además falla en silencio: un fine-tune viejo suena exactamente igual de seguro que uno fresco."
+            }
+          },
+          {
+            "option": {
+              "en": "Plain keyword search feeding the same prompt",
+              "es": "Búsqueda por palabra clave común alimentando el mismo prompt"
+            },
+            "why_not": {
+              "en": "It is cheaper and genuinely better for exact identifiers and error codes — which is why the honest end state here is both, not one. It was skipped in v1 only because support questions are paraphrase-heavy, and that is a decision worth revisiting with the below-floor log in hand.",
+              "es": "Es más barata y de verdad mejor para identificadores exactos y códigos de error — por eso el final honesto acá es tener las dos, no una. Se salteó en la v1 solo porque las preguntas de soporte son muy parafraseadas, y es una decisión que vale la pena revisar con el log de consultas bajo el piso en la mano."
+            }
+          }
         ]
-      }
+      },
+      "rubric": [
+        {
+          "en": "Says the search happens BEFORE the model is asked anything",
+          "es": "Dice que la búsqueda pasa ANTES de preguntarle nada al modelo"
+        },
+        {
+          "en": "Says the model is never taught the help pages",
+          "es": "Dice que al modelo nunca se le enseñan las páginas de ayuda"
+        },
+        {
+          "en": "Names a consequence of that: edits go live without retraining",
+          "es": "Nombra una consecuencia: los cambios entran sin reentrenar"
+        },
+        {
+          "en": "Says why sending all the pages instead would not work",
+          "es": "Dice por qué mandar todas las páginas no funcionaría"
+        }
+      ]
     },
     {
       "id": "chunking",
-      "name": {"en": "Cutting pages into passages", "es": "Cortar páginas en pasajes"},
-      "one_liner": {"en": "Why does a whole page make a bad unit of search, and what decides where the cuts go?", "es": "¿Por qué una página entera es una mala unidad de búsqueda y qué decide dónde van los cortes?"},
-      "banned_terms": ["chunk", "chunking", "token", "embedding", "vector", "granularity", "overlap window"],
+      "name": {
+        "en": "Cutting pages into passages",
+        "es": "Cortar páginas en pasajes"
+      },
+      "one_liner": {
+        "en": "Why does a whole page make a bad unit of search, and what decides where the cuts go?",
+        "es": "¿Por qué una página entera es una mala unidad de búsqueda y qué decide dónde van los cortes?"
+      },
+      "banned_terms": [
+        "chunk",
+        "chunking",
+        "token",
+        "embedding",
+        "vector",
+        "granularity",
+        "overlap window"
+      ],
       "simple_explanation": {
         "en": "A help page can be six screens long and cover eight unrelated things: how to log in, how to reset a password, what the error codes mean, and so on. If you file the whole page as one item, then its one summary has to stand for all eight topics at once — and a summary of eight things is a good match for none of them.\n\nSo before filing, each page is cut into pieces of roughly a paragraph or two. Each piece is about one thing, so its summary is sharp. The cuts overlap a little, because the sentence that actually answers a question has a habit of landing exactly where you made the cut, and the overlap guarantees at least one piece still contains it whole.",
         "es": "Una página de ayuda puede tener seis pantallas de largo y cubrir ocho cosas que no tienen nada que ver: cómo entrar, cómo resetear una contraseña, qué significan los códigos de error, etcétera. Si archivás la página entera como un solo ítem, su único resumen tiene que representar los ocho temas a la vez — y un resumen de ocho cosas no coincide bien con ninguna.\n\nAsí que antes de archivar, cada página se corta en pedazos de más o menos uno o dos párrafos. Cada pedazo habla de una sola cosa, entonces su resumen es filoso. Los cortes se superponen un poco, porque la oración que realmente contesta la pregunta tiene la costumbre de caer justo donde hiciste el corte, y la superposición garantiza que al menos un pedazo la siga teniendo entera."
       },
       "analogy": {
-        "text": {"en": "It is the difference between filing a whole newspaper under one label and filing each article separately. Ask for \"yesterday's football result\" and the newspaper-shaped file gives you 40 pages of everything; the article-shaped file gives you the six paragraphs you wanted.", "es": "Es la diferencia entre archivar un diario entero bajo una etiqueta y archivar cada artículo por separado. Pedí \"el resultado del fútbol de ayer\" y el archivo con forma de diario te da 40 páginas de todo; el archivo con forma de artículo te da los seis párrafos que querías."},
-        "breaks_down": {"en": "Articles have natural edges and passages do not — the cutter here counts characters, so it will happily slice a numbered procedure in half between step 3 and step 4. That is a real weakness of this implementation, not of the idea.", "es": "Los artículos tienen bordes naturales y los pasajes no — el cortador acá cuenta caracteres, así que va a partir tranquilamente un procedimiento numerado entre el paso 3 y el paso 4. Esa es una debilidad real de esta implementación, no de la idea."}
+        "text": {
+          "en": "It is the difference between filing a whole newspaper under one label and filing each article separately. Ask for \"yesterday's football result\" and the newspaper-shaped file gives you 40 pages of everything; the article-shaped file gives you the six paragraphs you wanted.",
+          "es": "Es la diferencia entre archivar un diario entero bajo una etiqueta y archivar cada artículo por separado. Pedí \"el resultado del fútbol de ayer\" y el archivo con forma de diario te da 40 páginas de todo; el archivo con forma de artículo te da los seis párrafos que querías."
+        },
+        "breaks_down": {
+          "en": "Articles have natural edges and passages do not — the cutter here counts characters, so it will happily slice a numbered procedure in half between step 3 and step 4. That is a real weakness of this implementation, not of the idea.",
+          "es": "Los artículos tienen bordes naturales y los pasajes no — el cortador acá cuenta caracteres, así que va a partir tranquilamente un procedimiento numerado entre el paso 3 y el paso 4. Esa es una debilidad real de esta implementación, no de la idea."
+        }
       },
       "gap_questions": [
-        {"q": {"en": "The overlap is 150 characters. What specifically goes wrong at 0, and what specifically goes wrong at 700?", "es": "La superposición es de 150 caracteres. ¿Qué se rompe concretamente en 0 y qué se rompe concretamente en 700?"}, "a": {"en": "At 0, a sentence split across a cut appears in neither piece as a complete thought, so the passage that should have matched no longer does. At 700 — nearly the passage size — almost every sentence is stored two or three times, which inflates storage and search cost and floods the top-5 with near-duplicates of the same text, crowding out genuinely different passages.", "es": "En 0, una oración partida por un corte no aparece entera en ningún pedazo, así que el pasaje que debería haber coincidido ya no coincide. En 700 — casi el tamaño del pasaje — casi toda oración queda guardada dos o tres veces, lo que infla el almacenamiento y el costo de búsqueda e inunda el top-5 con casi-duplicados del mismo texto, desplazando pasajes que sí son distintos."}, "anchor": "src/chunker.py:14"},
-        {"q": {"en": "The cutter counts characters, not sentences. Construct an input where that produces a passage nobody could answer from.", "es": "El cortador cuenta caracteres, no oraciones. Construí un input donde eso produzca un pasaje del que nadie podría contestar."}, "a": {"en": "Any numbered procedure longer than 800 characters: the cut lands mid-procedure and the second piece begins \"4. Click Confirm.\" with no indication of what is being confirmed. It will still match questions about confirming things, and it will still be useless.", "es": "Cualquier procedimiento numerado de más de 800 caracteres: el corte cae en el medio y el segundo pedazo arranca con \"4. Hacé clic en Confirmar.\" sin ninguna pista de qué se está confirmando. Va a seguir coincidiendo con preguntas sobre confirmar cosas y va a seguir siendo inútil."}, "anchor": "src/chunker.py:22"},
-        {"q": {"en": "Each stored passage keeps its source page URL alongside the text. Why is that stored at cut time rather than looked up later?", "es": "Cada pasaje guardado conserva la URL de su página fuente junto al texto. ¿Por qué se guarda en el momento del corte y no se busca después?"}, "a": {"en": "After cutting there is no way back — a passage is just text, with nothing in it that identifies which page it came from. If the link is not attached at the moment of the cut, citations become impossible and the whole debugging story from the previous concept collapses.", "es": "Después de cortar no hay vuelta atrás — un pasaje es solo texto, sin nada adentro que identifique de qué página vino. Si el vínculo no se adjunta en el momento del corte, las citas se vuelven imposibles y toda la historia de debugging del concepto anterior se derrumba."}, "anchor": "src/chunker.py:31"}
+        {
+          "q": {
+            "en": "The overlap is 150 characters. What specifically goes wrong at 0, and what specifically goes wrong at 700?",
+            "es": "La superposición es de 150 caracteres. ¿Qué se rompe concretamente en 0 y qué se rompe concretamente en 700?"
+          },
+          "a": {
+            "en": "At 0, a sentence split across a cut appears in neither piece as a complete thought, so the passage that should have matched no longer does. At 700 — nearly the passage size — almost every sentence is stored two or three times, which inflates storage and search cost and floods the top-5 with near-duplicates of the same text, crowding out genuinely different passages.",
+            "es": "En 0, una oración partida por un corte no aparece entera en ningún pedazo, así que el pasaje que debería haber coincidido ya no coincide. En 700 — casi el tamaño del pasaje — casi toda oración queda guardada dos o tres veces, lo que infla el almacenamiento y el costo de búsqueda e inunda el top-5 con casi-duplicados del mismo texto, desplazando pasajes que sí son distintos."
+          },
+          "anchor": "src/chunker.py:14"
+        },
+        {
+          "q": {
+            "en": "The cutter counts characters, not sentences. Construct an input where that produces a passage nobody could answer from.",
+            "es": "El cortador cuenta caracteres, no oraciones. Construí un input donde eso produzca un pasaje del que nadie podría contestar."
+          },
+          "a": {
+            "en": "Any numbered procedure longer than 800 characters: the cut lands mid-procedure and the second piece begins \"4. Click Confirm.\" with no indication of what is being confirmed. It will still match questions about confirming things, and it will still be useless.",
+            "es": "Cualquier procedimiento numerado de más de 800 caracteres: el corte cae en el medio y el segundo pedazo arranca con \"4. Hacé clic en Confirmar.\" sin ninguna pista de qué se está confirmando. Va a seguir coincidiendo con preguntas sobre confirmar cosas y va a seguir siendo inútil."
+          },
+          "anchor": "src/chunker.py:22"
+        },
+        {
+          "q": {
+            "en": "Each stored passage keeps its source page URL alongside the text. Why is that stored at cut time rather than looked up later?",
+            "es": "Cada pasaje guardado conserva la URL de su página fuente junto al texto. ¿Por qué se guarda en el momento del corte y no se busca después?"
+          },
+          "a": {
+            "en": "After cutting there is no way back — a passage is just text, with nothing in it that identifies which page it came from. If the link is not attached at the moment of the cut, citations become impossible and the whole debugging story from the previous concept collapses.",
+            "es": "Después de cortar no hay vuelta atrás — un pasaje es solo texto, sin nada adentro que identifique de qué página vino. Si el vínculo no se adjunta en el momento del corte, las citas se vuelven imposibles y toda la historia de debugging del concepto anterior se derrumba."
+          },
+          "anchor": "src/chunker.py:31"
+        }
       ],
       "senior": {
-        "tradeoff": {"en": "Fixed-size character cutting is chosen for being dead simple, deterministic, and format-agnostic. The price is that it is blind to document structure, so it will cut inside tables, code blocks, and numbered procedures. That price is acceptable for prose help pages and unacceptable for API reference docs.", "es": "El corte por cantidad fija de caracteres se elige por ser simplísimo, determinista y agnóstico al formato. El precio es que es ciego a la estructura del documento, así que corta adentro de tablas, bloques de código y procedimientos numerados. Ese precio es aceptable para páginas de ayuda en prosa e inaceptable para documentación de referencia de una API."},
+        "tradeoff": {
+          "en": "Fixed-size character cutting is chosen for being dead simple, deterministic, and format-agnostic. The price is that it is blind to document structure, so it will cut inside tables, code blocks, and numbered procedures. That price is acceptable for prose help pages and unacceptable for API reference docs.",
+          "es": "El corte por cantidad fija de caracteres se elige por ser simplísimo, determinista y agnóstico al formato. El precio es que es ciego a la estructura del documento, así que corta adentro de tablas, bloques de código y procedimientos numerados. Ese precio es aceptable para páginas de ayuda en prosa e inaceptable para documentación de referencia de una API."
+        },
         "failure_modes": [
-          {"mode": {"en": "Orphaned procedure steps", "es": "Pasos de procedimiento huérfanos"}, "symptom": {"en": "Answers that confidently start at step 4, or that describe a UI action with no context.", "es": "Respuestas que arrancan seguras en el paso 4, o que describen una acción de UI sin contexto."}, "mitigation": {"en": "Split on structural boundaries first (headings, list blocks) and only fall back to character counting inside a block.", "es": "Cortar primero en límites estructurales (encabezados, bloques de lista) y recién dentro de un bloque volver al conteo de caracteres."}},
-          {"mode": {"en": "Re-ingestion drift", "es": "Deriva en la reingesta"}, "symptom": {"en": "Editing one paragraph of a page changes every passage boundary after it, so the store fills with duplicate near-identical passages from old runs.", "es": "Editar un párrafo de una página corre todos los límites de pasaje posteriores, así que el almacén se llena de pasajes casi idénticos duplicados de corridas viejas."}, "mitigation": {"en": "Delete by source URL before re-inserting, which is exactly what makes storing that URL non-negotiable.", "es": "Borrar por URL de origen antes de reinsertar, que es exactamente lo que vuelve innegociable guardar esa URL."}}
+          {
+            "mode": {
+              "en": "Orphaned procedure steps",
+              "es": "Pasos de procedimiento huérfanos"
+            },
+            "symptom": {
+              "en": "Answers that confidently start at step 4, or that describe a UI action with no context.",
+              "es": "Respuestas que arrancan seguras en el paso 4, o que describen una acción de UI sin contexto."
+            },
+            "mitigation": {
+              "en": "Split on structural boundaries first (headings, list blocks) and only fall back to character counting inside a block.",
+              "es": "Cortar primero en límites estructurales (encabezados, bloques de lista) y recién dentro de un bloque volver al conteo de caracteres."
+            }
+          },
+          {
+            "mode": {
+              "en": "Re-ingestion drift",
+              "es": "Deriva en la reingesta"
+            },
+            "symptom": {
+              "en": "Editing one paragraph of a page changes every passage boundary after it, so the store fills with duplicate near-identical passages from old runs.",
+              "es": "Editar un párrafo de una página corre todos los límites de pasaje posteriores, así que el almacén se llena de pasajes casi idénticos duplicados de corridas viejas."
+            },
+            "mitigation": {
+              "en": "Delete by source URL before re-inserting, which is exactly what makes storing that URL non-negotiable.",
+              "es": "Borrar por URL de origen antes de reinsertar, que es exactamente lo que vuelve innegociable guardar esa URL."
+            }
+          }
         ],
-        "cost_complexity": {"en": "O(characters) and negligible next to the embedding calls it feeds. Passage size is the real cost lever: halving it doubles the number of embedding calls, doubles rows, and makes each retrieved passage carry less context into the prompt.", "es": "O(caracteres) y despreciable al lado de las llamadas de embedding que alimenta. El tamaño del pasaje es la verdadera palanca de costo: reducirlo a la mitad duplica las llamadas de embedding, duplica las filas y hace que cada pasaje recuperado lleve menos contexto al prompt."},
-        "at_scale": {"en": "The knob that actually moves answer quality is passage size, and it is corpus-specific — 800 characters suits prose, 200 suits FAQ pairs, 2,000 suits legal text. Tune it against a held-out question set, never by intuition, and re-tune whenever the corpus changes character.", "es": "La perilla que de verdad mueve la calidad de las respuestas es el tamaño del pasaje, y depende del corpus — 800 caracteres le van bien a la prosa, 200 a pares de FAQ, 2.000 a texto legal. Ajustalo contra un set de preguntas reservado, nunca por intuición, y reajustalo cada vez que el corpus cambie de carácter."},
+        "cost_complexity": {
+          "en": "O(characters) and negligible next to the embedding calls it feeds. Passage size is the real cost lever: halving it doubles the number of embedding calls, doubles rows, and makes each retrieved passage carry less context into the prompt.",
+          "es": "O(caracteres) y despreciable al lado de las llamadas de embedding que alimenta. El tamaño del pasaje es la verdadera palanca de costo: reducirlo a la mitad duplica las llamadas de embedding, duplica las filas y hace que cada pasaje recuperado lleve menos contexto al prompt."
+        },
+        "at_scale": {
+          "en": "The knob that actually moves answer quality is passage size, and it is corpus-specific — 800 characters suits prose, 200 suits FAQ pairs, 2,000 suits legal text. Tune it against a held-out question set, never by intuition, and re-tune whenever the corpus changes character.",
+          "es": "La perilla que de verdad mueve la calidad de las respuestas es el tamaño del pasaje, y depende del corpus — 800 caracteres le van bien a la prosa, 200 a pares de FAQ, 2.000 a texto legal. Ajustalo contra un set de preguntas reservado, nunca por intuición, y reajustalo cada vez que el corpus cambie de carácter."
+        },
         "alternatives": [
-          {"option": {"en": "Structure-aware splitting on Markdown headings", "es": "Corte consciente de la estructura por encabezados Markdown"}, "why_not": {"en": "Strictly better for this corpus and the obvious v2. It was skipped in v1 only because the source pages are HTML of inconsistent quality and the heading extraction is its own small project.", "es": "Estrictamente mejor para este corpus y la v2 obvia. Se salteó en la v1 solo porque las páginas fuente son HTML de calidad despareja y extraer los encabezados es un proyecto chico en sí mismo."}}
+          {
+            "option": {
+              "en": "Structure-aware splitting on Markdown headings",
+              "es": "Corte consciente de la estructura por encabezados Markdown"
+            },
+            "why_not": {
+              "en": "Strictly better for this corpus and the obvious v2. It was skipped in v1 only because the source pages are HTML of inconsistent quality and the heading extraction is its own small project.",
+              "es": "Estrictamente mejor para este corpus y la v2 obvia. Se salteó en la v1 solo porque las páginas fuente son HTML de calidad despareja y extraer los encabezados es un proyecto chico en sí mismo."
+            }
+          }
         ]
-      }
+      },
+      "rubric": [
+        {
+          "en": "Says whole pages are cut into smaller pieces before storing",
+          "es": "Dice que las páginas se cortan en pedazos antes de guardarse"
+        },
+        {
+          "en": "Gives a reason the pieces are small: a whole page buries the answer",
+          "es": "Da una razón para que sean chicos: una página entera entierra la respuesta"
+        },
+        {
+          "en": "Says consecutive pieces overlap",
+          "es": "Dice que los pedazos consecutivos se solapan"
+        },
+        {
+          "en": "Says the overlap exists so an answer split across a cut is still findable",
+          "es": "Dice que el solape existe para que una respuesta partida al medio siga siendo encontrable"
+        }
+      ]
     },
     {
       "id": "similarity-floor",
-      "name": {"en": "The floor that lets it say \"I don't know\"", "es": "El piso que le permite decir \"no sé\""},
-      "one_liner": {"en": "Search always returns its five best guesses. What stops the system from answering from five bad ones?", "es": "La búsqueda siempre devuelve sus cinco mejores tentativas. ¿Qué evita que el sistema conteste a partir de cinco malas?"},
-      "banned_terms": ["threshold", "cosine", "similarity", "score", "vector", "embedding", "confidence"],
+      "name": {
+        "en": "The floor that lets it say \"I don't know\"",
+        "es": "El piso que le permite decir \"no sé\""
+      },
+      "one_liner": {
+        "en": "Search always returns its five best guesses. What stops the system from answering from five bad ones?",
+        "es": "La búsqueda siempre devuelve sus cinco mejores tentativas. ¿Qué evita que el sistema conteste a partir de cinco malas?"
+      },
+      "banned_terms": [
+        "threshold",
+        "cosine",
+        "similarity",
+        "score",
+        "vector",
+        "embedding",
+        "confidence"
+      ],
       "simple_explanation": {
         "en": "The search step has no idea whether it did a good job. Ask it for the five closest passages to \"how do I reset a password\" and it returns five. Ask it the same for \"what is the airspeed of a swallow\" and it *also* returns five — the five least-unrelated passages it has, because five is what you asked for and it has no way to return \"nothing here fits\".\n\nSo the system measures how close each returned passage actually is, on a scale where 1 means \"about the same thing\" and 0 means \"nothing in common\", and throws away everything under 0.72. When that leaves nothing, the service stops right there and says it does not know — it never even asks the model. That refusal is a feature, and it is the difference between a tool people trust and one they learn to double-check.",
         "es": "El paso de búsqueda no tiene idea de si hizo un buen trabajo. Pedile los cinco pasajes más cercanos a \"cómo reseteo una contraseña\" y devuelve cinco. Pedile lo mismo para \"cuál es la velocidad de vuelo de una golondrina\" y *también* devuelve cinco — los cinco menos irrelevantes que tiene, porque cinco es lo que pediste y no tiene forma de devolver \"acá no hay nada que sirva\".\n\nEntonces el sistema mide qué tan cerca está realmente cada pasaje devuelto, en una escala donde 1 significa \"habla de lo mismo\" y 0 significa \"no tienen nada en común\", y descarta todo lo que esté por debajo de 0,72. Cuando eso no deja nada, el servicio frena ahí y dice que no sabe — ni siquiera le pregunta al modelo. Esa negativa es una función, y es la diferencia entre una herramienta en la que la gente confía y una que aprenden a verificar dos veces."
       },
       "analogy": {
-        "text": {"en": "It is the difference between a librarian who says \"we don't have anything on that\" and one who hands you the three books that were physically nearest to where the right book would have been.", "es": "Es la diferencia entre un bibliotecario que dice \"no tenemos nada sobre eso\" y uno que te entrega los tres libros que estaban físicamente más cerca de donde habría estado el libro correcto."},
-        "breaks_down": {"en": "A librarian knows the difference between \"we don't have it\" and \"I couldn't find it\". This floor cannot tell those apart either — it only sees a number, so a badly-worded question and a genuinely uncovered topic produce the identical refusal.", "es": "Un bibliotecario distingue entre \"no lo tenemos\" y \"no lo pude encontrar\". Este piso tampoco puede distinguirlos — solo ve un número, así que una pregunta mal formulada y un tema realmente no cubierto producen la misma negativa idéntica."}
+        "text": {
+          "en": "It is the difference between a librarian who says \"we don't have anything on that\" and one who hands you the three books that were physically nearest to where the right book would have been.",
+          "es": "Es la diferencia entre un bibliotecario que dice \"no tenemos nada sobre eso\" y uno que te entrega los tres libros que estaban físicamente más cerca de donde habría estado el libro correcto."
+        },
+        "breaks_down": {
+          "en": "A librarian knows the difference between \"we don't have it\" and \"I couldn't find it\". This floor cannot tell those apart either — it only sees a number, so a badly-worded question and a genuinely uncovered topic produce the identical refusal.",
+          "es": "Un bibliotecario distingue entre \"no lo tenemos\" y \"no lo pude encontrar\". Este piso tampoco puede distinguirlos — solo ve un número, así que una pregunta mal formulada y un tema realmente no cubierto producen la misma negativa idéntica."
+        }
       },
       "gap_questions": [
-        {"q": {"en": "The number is 0.72. Describe the user-visible behaviour at 0.30 and at 0.95, and say which of the two is more dangerous.", "es": "El número es 0,72. Describí el comportamiento visible para el usuario en 0,30 y en 0,95, y decí cuál de los dos es más peligroso."}, "a": {"en": "At 0.30 almost everything passes, the model receives loosely related text on nearly every question, and it produces fluent answers grounded in the wrong passages. At 0.95 almost nothing passes and the service says \"I don't know\" to questions it can plainly answer. 0.30 is far more dangerous: a system that refuses is annoying and visible, while a system that is confidently wrong is trusted and invisible.", "es": "En 0,30 pasa casi todo, el modelo recibe texto vagamente relacionado en casi toda pregunta y produce respuestas fluidas apoyadas en los pasajes equivocados. En 0,95 casi no pasa nada y el servicio dice \"no sé\" a preguntas que puede contestar de sobra. 0,30 es mucho más peligroso: un sistema que se niega es molesto y visible, mientras que uno que se equivoca con seguridad genera confianza y es invisible."}, "anchor": "src/answer.py:31"},
-        {"q": {"en": "Where did 0.72 come from, and what would you need in order to change it responsibly?", "es": "¿De dónde salió 0,72 y qué necesitarías para cambiarlo de forma responsable?"}, "a": {"en": "It was tuned by hand against a small set of known questions and is specific to this embedding model — swap the model and the number is meaningless. To change it responsibly you need a labelled set of questions with known answerable/unanswerable status, and you pick the value from the tradeoff curve rather than from a hunch.", "es": "Se ajustó a mano contra un set chico de preguntas conocidas y es específico de este modelo de embeddings — cambiás de modelo y el número no significa nada. Para cambiarlo de forma responsable necesitás un set etiquetado de preguntas con estado conocido de contestable/no contestable, y elegís el valor desde la curva de trade-off, no desde una corazonada."}, "anchor": "src/answer.py:31"},
-        {"q": {"en": "The prompt also tells the model to say when the text does not contain the answer. If the model already does that, why keep the floor at all?", "es": "El prompt también le dice al modelo que avise cuando el texto no tiene la respuesta. Si el modelo ya hace eso, ¿para qué mantener el piso?"}, "a": {"en": "Two independent defences at different levels. The floor is deterministic, costs nothing, and cannot be talked out of its decision; the instruction is probabilistic and degrades exactly when the passages are seductively plausible — which is the case that matters. The floor also saves the generation call entirely, so refusal is free and instant.", "es": "Dos defensas independientes en niveles distintos. El piso es determinista, no cuesta nada y no se lo puede convencer de cambiar de opinión; la instrucción es probabilística y se degrada justamente cuando los pasajes son seductoramente plausibles — que es el caso que importa. El piso además ahorra la llamada de generación entera, así que negarse sale gratis y es instantáneo."}, "anchor": "src/answer.py:44"}
+        {
+          "q": {
+            "en": "The number is 0.72. Describe the user-visible behaviour at 0.30 and at 0.95, and say which of the two is more dangerous.",
+            "es": "El número es 0,72. Describí el comportamiento visible para el usuario en 0,30 y en 0,95, y decí cuál de los dos es más peligroso."
+          },
+          "a": {
+            "en": "At 0.30 almost everything passes, the model receives loosely related text on nearly every question, and it produces fluent answers grounded in the wrong passages. At 0.95 almost nothing passes and the service says \"I don't know\" to questions it can plainly answer. 0.30 is far more dangerous: a system that refuses is annoying and visible, while a system that is confidently wrong is trusted and invisible.",
+            "es": "En 0,30 pasa casi todo, el modelo recibe texto vagamente relacionado en casi toda pregunta y produce respuestas fluidas apoyadas en los pasajes equivocados. En 0,95 casi no pasa nada y el servicio dice \"no sé\" a preguntas que puede contestar de sobra. 0,30 es mucho más peligroso: un sistema que se niega es molesto y visible, mientras que uno que se equivoca con seguridad genera confianza y es invisible."
+          },
+          "anchor": "src/answer.py:31"
+        },
+        {
+          "q": {
+            "en": "Where did 0.72 come from, and what would you need in order to change it responsibly?",
+            "es": "¿De dónde salió 0,72 y qué necesitarías para cambiarlo de forma responsable?"
+          },
+          "a": {
+            "en": "It was tuned by hand against a small set of known questions and is specific to this embedding model — swap the model and the number is meaningless. To change it responsibly you need a labelled set of questions with known answerable/unanswerable status, and you pick the value from the tradeoff curve rather than from a hunch.",
+            "es": "Se ajustó a mano contra un set chico de preguntas conocidas y es específico de este modelo de embeddings — cambiás de modelo y el número no significa nada. Para cambiarlo de forma responsable necesitás un set etiquetado de preguntas con estado conocido de contestable/no contestable, y elegís el valor desde la curva de trade-off, no desde una corazonada."
+          },
+          "anchor": "src/answer.py:31"
+        },
+        {
+          "q": {
+            "en": "The prompt also tells the model to say when the text does not contain the answer. If the model already does that, why keep the floor at all?",
+            "es": "El prompt también le dice al modelo que avise cuando el texto no tiene la respuesta. Si el modelo ya hace eso, ¿para qué mantener el piso?"
+          },
+          "a": {
+            "en": "Two independent defences at different levels. The floor is deterministic, costs nothing, and cannot be talked out of its decision; the instruction is probabilistic and degrades exactly when the passages are seductively plausible — which is the case that matters. The floor also saves the generation call entirely, so refusal is free and instant.",
+            "es": "Dos defensas independientes en niveles distintos. El piso es determinista, no cuesta nada y no se lo puede convencer de cambiar de opinión; la instrucción es probabilística y se degrada justamente cuando los pasajes son seductoramente plausibles — que es el caso que importa. El piso además ahorra la llamada de generación entera, así que negarse sale gratis y es instantáneo."
+          },
+          "anchor": "src/answer.py:44"
+        }
       ],
       "senior": {
-        "tradeoff": {"en": "A single global constant buys determinism, zero cost, and an auditable refusal path, at the price of being wrong per-query in both directions and being silently invalidated by any embedding model change. It is the right v1 and a known piece of debt.", "es": "Una única constante global compra determinismo, costo cero y un camino de negativa auditable, al precio de equivocarse por consulta en las dos direcciones y de quedar invalidada en silencio ante cualquier cambio del modelo de embeddings."},
+        "tradeoff": {
+          "en": "A single global constant buys determinism, zero cost, and an auditable refusal path, at the price of being wrong per-query in both directions and being silently invalidated by any embedding model change. It is the right v1 and a known piece of debt.",
+          "es": "Una única constante global compra determinismo, costo cero y un camino de negativa auditable, al precio de equivocarse por consulta en las dos direcciones y de quedar invalidada en silencio ante cualquier cambio del modelo de embeddings."
+        },
         "failure_modes": [
-          {"mode": {"en": "Silent invalidation on model upgrade", "es": "Invalidación silenciosa al actualizar el modelo"}, "symptom": {"en": "Someone bumps the embedding model, every score shifts, and the refusal rate jumps or collapses overnight with no code change to blame.", "es": "Alguien actualiza el modelo de embeddings, todos los scores se corren y la tasa de negativas se dispara o se desploma de un día para el otro sin ningún cambio de código al que culpar."}, "mitigation": {"en": "Store the model identifier next to the constant and fail loudly at startup when they disagree. A magic number that depends on another component's version must be coupled to it explicitly.", "es": "Guardar el identificador del modelo junto a la constante y fallar ruidosamente al arrancar cuando no coinciden. Un número mágico que depende de la versión de otro componente tiene que estar acoplado a ella explícitamente."}},
-          {"mode": {"en": "Refusal rate drifting unnoticed", "es": "Deriva no detectada de la tasa de negativas"}, "symptom": {"en": "Users quietly stop using the tool. Nothing errors, nothing pages, latency and uptime look perfect.", "es": "Los usuarios dejan de usar la herramienta sin decir nada. No hay errores, no suena ninguna alerta, la latencia y el uptime se ven perfectos."}, "mitigation": {"en": "Treat the refusal rate as a first-class production metric with an alert on it. It is the only signal that distinguishes a healthy system from a useless one, and no infrastructure dashboard will ever show it to you.", "es": "Tratar la tasa de negativas como una métrica de producción de primer nivel, con alerta. Es la única señal que distingue un sistema sano de uno inútil, y ningún dashboard de infraestructura te la va a mostrar."}}
+          {
+            "mode": {
+              "en": "Silent invalidation on model upgrade",
+              "es": "Invalidación silenciosa al actualizar el modelo"
+            },
+            "symptom": {
+              "en": "Someone bumps the embedding model, every score shifts, and the refusal rate jumps or collapses overnight with no code change to blame.",
+              "es": "Alguien actualiza el modelo de embeddings, todos los scores se corren y la tasa de negativas se dispara o se desploma de un día para el otro sin ningún cambio de código al que culpar."
+            },
+            "mitigation": {
+              "en": "Store the model identifier next to the constant and fail loudly at startup when they disagree. A magic number that depends on another component's version must be coupled to it explicitly.",
+              "es": "Guardar el identificador del modelo junto a la constante y fallar ruidosamente al arrancar cuando no coinciden. Un número mágico que depende de la versión de otro componente tiene que estar acoplado a ella explícitamente."
+            }
+          },
+          {
+            "mode": {
+              "en": "Refusal rate drifting unnoticed",
+              "es": "Deriva no detectada de la tasa de negativas"
+            },
+            "symptom": {
+              "en": "Users quietly stop using the tool. Nothing errors, nothing pages, latency and uptime look perfect.",
+              "es": "Los usuarios dejan de usar la herramienta sin decir nada. No hay errores, no suena ninguna alerta, la latencia y el uptime se ven perfectos."
+            },
+            "mitigation": {
+              "en": "Treat the refusal rate as a first-class production metric with an alert on it. It is the only signal that distinguishes a healthy system from a useless one, and no infrastructure dashboard will ever show it to you.",
+              "es": "Tratar la tasa de negativas como una métrica de producción de primer nivel, con alerta. Es la única señal que distingue un sistema sano de uno inútil, y ningún dashboard de infraestructura te la va a mostrar."
+            }
+          }
         ],
-        "cost_complexity": {"en": "Free — one comparison per returned row — and it *saves* money by skipping generation on unanswerable questions. In a corpus with poor coverage that saving is substantial.", "es": "Gratis — una comparación por fila devuelta — y encima *ahorra* plata al saltearse la generación en preguntas incontestables. En un corpus con cobertura pobre ese ahorro es sustancial."},
-        "at_scale": {"en": "Global constants stop working once the corpus is heterogeneous, because a well-covered product area and a thin one need different floors. The scalable version is per-collection floors calibrated from labelled data, with the refusal rate monitored per collection rather than globally.", "es": "Las constantes globales dejan de funcionar apenas el corpus es heterogéneo, porque un área de producto bien cubierta y una escuálida necesitan pisos distintos. La versión escalable son pisos por colección calibrados con datos etiquetados, y la tasa de negativas monitoreada por colección en vez de globalmente."},
+        "cost_complexity": {
+          "en": "Free — one comparison per returned row — and it *saves* money by skipping generation on unanswerable questions. In a corpus with poor coverage that saving is substantial.",
+          "es": "Gratis — una comparación por fila devuelta — y encima *ahorra* plata al saltearse la generación en preguntas incontestables. En un corpus con cobertura pobre ese ahorro es sustancial."
+        },
+        "at_scale": {
+          "en": "Global constants stop working once the corpus is heterogeneous, because a well-covered product area and a thin one need different floors. The scalable version is per-collection floors calibrated from labelled data, with the refusal rate monitored per collection rather than globally.",
+          "es": "Las constantes globales dejan de funcionar apenas el corpus es heterogéneo, porque un área de producto bien cubierta y una escuálida necesitan pisos distintos. La versión escalable son pisos por colección calibrados con datos etiquetados, y la tasa de negativas monitoreada por colección en vez de globalmente."
+        },
         "alternatives": [
-          {"option": {"en": "Let a small model judge relevance instead of using a number", "es": "Dejar que un modelo chico juzgue la relevancia en vez de usar un número"}, "why_not": {"en": "More accurate and genuinely worth it above a certain volume, but it adds a call, latency, cost, and a second non-deterministic component to debug. Not the right first move when a constant gets you most of the way.", "es": "Más preciso y realmente vale la pena por encima de cierto volumen, pero agrega una llamada, latencia, costo y un segundo componente no determinista que debuggear. No es el primer paso correcto cuando una constante te lleva casi todo el camino."}}
+          {
+            "option": {
+              "en": "Let a small model judge relevance instead of using a number",
+              "es": "Dejar que un modelo chico juzgue la relevancia en vez de usar un número"
+            },
+            "why_not": {
+              "en": "More accurate and genuinely worth it above a certain volume, but it adds a call, latency, cost, and a second non-deterministic component to debug. Not the right first move when a constant gets you most of the way.",
+              "es": "Más preciso y realmente vale la pena por encima de cierto volumen, pero agrega una llamada, latencia, costo y un segundo componente no determinista que debuggear. No es el primer paso correcto cuando una constante te lleva casi todo el camino."
+            }
+          }
         ]
-      }
+      },
+      "rubric": [
+        {
+          "en": "Says the search ALWAYS returns its best guesses, even bad ones",
+          "es": "Dice que la búsqueda SIEMPRE devuelve sus mejores intentos, incluso malos"
+        },
+        {
+          "en": "Says a result that is not close enough gets thrown away",
+          "es": "Dice que un resultado que no se parece lo suficiente se descarta"
+        },
+        {
+          "en": "Says that when nothing survives, the model is never called at all",
+          "es": "Dice que cuando no sobrevive nada, al modelo no se lo llama"
+        },
+        {
+          "en": "Names what the floor prevents: a confident invented answer",
+          "es": "Nombra qué evita el piso: una respuesta inventada con seguridad"
+        }
+      ]
     }
   ],
-
   "rebuild": {
     "spec": {
       "en": "Build a module `qa.py` that answers questions from a fixed set of documents, from an empty file, without opening the original source.\n\nIt must expose exactly two functions:\n\n`ingest(docs)` takes a list of `{\"url\": str, \"text\": str}`. It splits each document into overlapping passages, embeds each passage, and stores passage text, source URL, and embedding. Calling it twice with the same URL must not create duplicates.\n\n`ask(question)` returns `{\"answer\": str, \"sources\": [str]}`. It embeds the question, finds the closest stored passages, drops any that are not similar enough, and — if none survive — returns a fixed \"I don't know\" answer with an empty sources list **without calling the generation model at all**. Otherwise it builds a prompt from the surviving passages, calls the model, and returns the reply with the deduplicated source URLs.\n\nUse any embedding and generation functions you like; the tests inject fakes.",
       "es": "Construí un módulo `qa.py` que conteste preguntas a partir de un conjunto fijo de documentos, desde un archivo vacío, sin abrir el código original.\n\nTiene que exponer exactamente dos funciones:\n\n`ingest(docs)` recibe una lista de `{\"url\": str, \"text\": str}`. Parte cada documento en pasajes superpuestos, embebe cada pasaje y guarda texto del pasaje, URL de origen y embedding. Llamarla dos veces con la misma URL no debe crear duplicados.\n\n`ask(question)` devuelve `{\"answer\": str, \"sources\": [str]}`. Embebe la pregunta, busca los pasajes guardados más cercanos, descarta los que no son suficientemente parecidos y — si no sobrevive ninguno — devuelve una respuesta fija de \"no sé\" con lista de fuentes vacía **sin llamar en absoluto al modelo de generación**. Si no, arma un prompt con los pasajes sobrevivientes, llama al modelo y devuelve la respuesta con las URLs de origen deduplicadas.\n\nUsá las funciones de embedding y generación que quieras; los tests inyectan versiones falsas."
     },
     "constraints": [
-      {"en": "In-memory storage is fine. A list of dicts is a perfectly good vector store at this size — do not install a database to prove a point.", "es": "Guardar en memoria está bien. Una lista de diccionarios es un almacén vectorial perfectamente válido a esta escala — no instales una base de datos para demostrar nada."},
-      {"en": "No frameworks. If you find yourself importing a retrieval library, you have outsourced the exact thing you are trying to learn.", "es": "Sin frameworks. Si te encontrás importando una librería de retrieval, tercerizaste justamente lo que estás tratando de aprender."},
-      {"en": "Write the similarity function yourself, from the definition. It is four lines and it is the piece most people never actually look at.", "es": "Escribí vos la función de similitud, desde la definición. Son cuatro líneas y es la pieza que casi nadie mira de verdad."}
+      {
+        "en": "In-memory storage is fine. A list of dicts is a perfectly good vector store at this size — do not install a database to prove a point.",
+        "es": "Guardar en memoria está bien. Una lista de diccionarios es un almacén vectorial perfectamente válido a esta escala — no instales una base de datos para demostrar nada."
+      },
+      {
+        "en": "No frameworks. If you find yourself importing a retrieval library, you have outsourced the exact thing you are trying to learn.",
+        "es": "Sin frameworks. Si te encontrás importando una librería de retrieval, tercerizaste justamente lo que estás tratando de aprender."
+      },
+      {
+        "en": "Write the similarity function yourself, from the definition. It is four lines and it is the piece most people never actually look at.",
+        "es": "Escribí vos la función de similitud, desde la definición. Son cuatro líneas y es la pieza que casi nadie mira de verdad."
+      }
     ],
     "milestones": [
-      {"title": {"en": "Splitting", "es": "El corte"}, "goal": {"en": "A function that turns a long string into overlapping pieces of a given size and overlap.", "es": "Una función que convierte un string largo en pedazos superpuestos de un tamaño y superposición dados."}, "acceptance": {"en": "A 2,000-character string with size 800 and overlap 150 produces pieces that, glued back with the overlap removed, reproduce the original exactly.", "es": "Un string de 2.000 caracteres con tamaño 800 y superposición 150 produce pedazos que, pegados sacando la superposición, reproducen el original exactamente."}, "hint": {"en": "Advance your cursor by (size - overlap) each step, not by size. Getting the last piece right is the part everyone gets wrong first.", "es": "Avanzá el cursor (tamaño - superposición) en cada paso, no el tamaño. El último pedazo es la parte que todos hacen mal la primera vez."}},
-      {"title": {"en": "Closeness", "es": "La cercanía"}, "goal": {"en": "A function that scores how similar two number lists are, returning 1 for identical direction and 0 for unrelated.", "es": "Una función que puntúa qué tan parecidas son dos listas de números, devolviendo 1 para la misma dirección y 0 para no relacionadas."}, "acceptance": {"en": "score(v, v) == 1.0 for any non-zero v, and score([1,0], [0,1]) == 0.0.", "es": "score(v, v) == 1.0 para cualquier v distinto de cero, y score([1,0], [0,1]) == 0.0."}, "hint": {"en": "Two lists point the same way when their dot product equals the product of their lengths. Divide one by the other and you are done — but decide what a zero-length list should do before a test finds out for you.", "es": "Dos listas apuntan en la misma dirección cuando su producto punto es igual al producto de sus longitudes. Dividí uno por el otro y listo — pero decidí qué hace una lista de longitud cero antes de que un test lo averigüe por vos."}},
-      {"title": {"en": "Storing", "es": "El guardado"}, "goal": {"en": "`ingest(docs)` fills the store, and re-ingesting the same URL replaces rather than duplicates.", "es": "`ingest(docs)` llena el almacén, y reingerir la misma URL reemplaza en vez de duplicar."}, "acceptance": {"en": "Ingesting the same document twice leaves the same number of stored passages as ingesting it once.", "es": "Ingerir el mismo documento dos veces deja la misma cantidad de pasajes guardados que ingerirlo una vez."}, "hint": {"en": "Delete by URL before inserting. This is the moment you find out why every passage had to carry its source.", "es": "Borrá por URL antes de insertar. Este es el momento en que descubrís por qué cada pasaje tenía que llevar su origen."}},
-      {"title": {"en": "Searching", "es": "La búsqueda"}, "goal": {"en": "Given a question vector, return the k closest passages with their scores, best first.", "es": "Dado el vector de una pregunta, devolver los k pasajes más cercanos con sus scores, el mejor primero."}, "acceptance": {"en": "With three stored passages and k=2, you get exactly two results and the first has the higher score.", "es": "Con tres pasajes guardados y k=2, obtenés exactamente dos resultados y el primero tiene el score más alto."}, "hint": {"en": "Score everything, sort descending, slice. Do not optimise this — at this size the obvious version is the correct version.", "es": "Puntuá todo, ordená descendente, cortá. No lo optimices — a esta escala la versión obvia es la correcta."}},
-      {"title": {"en": "Refusing", "es": "La negativa"}, "goal": {"en": "Drop passages below the floor, and when nothing survives return the fixed answer without calling the generation model.", "es": "Descartar pasajes bajo el piso y, cuando no sobreviva ninguno, devolver la respuesta fija sin llamar al modelo de generación."}, "acceptance": {"en": "With a fake generator that raises if called, a question unrelated to every stored passage still returns cleanly.", "es": "Con un generador falso que lanza una excepción si lo llaman, una pregunta ajena a todos los pasajes guardados igual devuelve limpiamente."}, "hint": {"en": "Return before you build the prompt, not inside the model call. If your test can only pass by catching an exception, the check is in the wrong place.", "es": "Devolvé antes de armar el prompt, no adentro de la llamada al modelo. Si tu test solo pasa atrapando una excepción, el chequeo está en el lugar equivocado."}},
-      {"title": {"en": "Answering", "es": "La respuesta"}, "goal": {"en": "Build the prompt from surviving passages, call the model, return the answer with deduplicated source URLs.", "es": "Armar el prompt con los pasajes sobrevivientes, llamar al modelo y devolver la respuesta con las URLs de origen deduplicadas."}, "acceptance": {"en": "Two surviving passages from the same page yield one source URL, not two.", "es": "Dos pasajes sobrevivientes de la misma página producen una URL de origen, no dos."}, "hint": {"en": "Deduplicate while preserving order — the best-scoring source should still be listed first.", "es": "Deduplicá preservando el orden — la fuente con mejor score tiene que seguir apareciendo primero."}}
+      {
+        "title": {
+          "en": "Splitting",
+          "es": "El corte"
+        },
+        "goal": {
+          "en": "A function that turns a long string into overlapping pieces of a given size and overlap.",
+          "es": "Una función que convierte un string largo en pedazos superpuestos de un tamaño y superposición dados."
+        },
+        "acceptance": {
+          "en": "A 2,000-character string with size 800 and overlap 150 produces pieces that, glued back with the overlap removed, reproduce the original exactly.",
+          "es": "Un string de 2.000 caracteres con tamaño 800 y superposición 150 produce pedazos que, pegados sacando la superposición, reproducen el original exactamente."
+        },
+        "hint": {
+          "en": "Advance your cursor by (size - overlap) each step, not by size. Getting the last piece right is the part everyone gets wrong first.",
+          "es": "Avanzá el cursor (tamaño - superposición) en cada paso, no el tamaño. El último pedazo es la parte que todos hacen mal la primera vez."
+        }
+      },
+      {
+        "title": {
+          "en": "Closeness",
+          "es": "La cercanía"
+        },
+        "goal": {
+          "en": "A function that scores how similar two number lists are, returning 1 for identical direction and 0 for unrelated.",
+          "es": "Una función que puntúa qué tan parecidas son dos listas de números, devolviendo 1 para la misma dirección y 0 para no relacionadas."
+        },
+        "acceptance": {
+          "en": "score(v, v) == 1.0 for any non-zero v, and score([1,0], [0,1]) == 0.0.",
+          "es": "score(v, v) == 1.0 para cualquier v distinto de cero, y score([1,0], [0,1]) == 0.0."
+        },
+        "hint": {
+          "en": "Two lists point the same way when their dot product equals the product of their lengths. Divide one by the other and you are done — but decide what a zero-length list should do before a test finds out for you.",
+          "es": "Dos listas apuntan en la misma dirección cuando su producto punto es igual al producto de sus longitudes. Dividí uno por el otro y listo — pero decidí qué hace una lista de longitud cero antes de que un test lo averigüe por vos."
+        }
+      },
+      {
+        "title": {
+          "en": "Storing",
+          "es": "El guardado"
+        },
+        "goal": {
+          "en": "`ingest(docs)` fills the store, and re-ingesting the same URL replaces rather than duplicates.",
+          "es": "`ingest(docs)` llena el almacén, y reingerir la misma URL reemplaza en vez de duplicar."
+        },
+        "acceptance": {
+          "en": "Ingesting the same document twice leaves the same number of stored passages as ingesting it once.",
+          "es": "Ingerir el mismo documento dos veces deja la misma cantidad de pasajes guardados que ingerirlo una vez."
+        },
+        "hint": {
+          "en": "Delete by URL before inserting. This is the moment you find out why every passage had to carry its source.",
+          "es": "Borrá por URL antes de insertar. Este es el momento en que descubrís por qué cada pasaje tenía que llevar su origen."
+        }
+      },
+      {
+        "title": {
+          "en": "Searching",
+          "es": "La búsqueda"
+        },
+        "goal": {
+          "en": "Given a question vector, return the k closest passages with their scores, best first.",
+          "es": "Dado el vector de una pregunta, devolver los k pasajes más cercanos con sus scores, el mejor primero."
+        },
+        "acceptance": {
+          "en": "With three stored passages and k=2, you get exactly two results and the first has the higher score.",
+          "es": "Con tres pasajes guardados y k=2, obtenés exactamente dos resultados y el primero tiene el score más alto."
+        },
+        "hint": {
+          "en": "Score everything, sort descending, slice. Do not optimise this — at this size the obvious version is the correct version.",
+          "es": "Puntuá todo, ordená descendente, cortá. No lo optimices — a esta escala la versión obvia es la correcta."
+        }
+      },
+      {
+        "title": {
+          "en": "Refusing",
+          "es": "La negativa"
+        },
+        "goal": {
+          "en": "Drop passages below the floor, and when nothing survives return the fixed answer without calling the generation model.",
+          "es": "Descartar pasajes bajo el piso y, cuando no sobreviva ninguno, devolver la respuesta fija sin llamar al modelo de generación."
+        },
+        "acceptance": {
+          "en": "With a fake generator that raises if called, a question unrelated to every stored passage still returns cleanly.",
+          "es": "Con un generador falso que lanza una excepción si lo llaman, una pregunta ajena a todos los pasajes guardados igual devuelve limpiamente."
+        },
+        "hint": {
+          "en": "Return before you build the prompt, not inside the model call. If your test can only pass by catching an exception, the check is in the wrong place.",
+          "es": "Devolvé antes de armar el prompt, no adentro de la llamada al modelo. Si tu test solo pasa atrapando una excepción, el chequeo está en el lugar equivocado."
+        }
+      },
+      {
+        "title": {
+          "en": "Answering",
+          "es": "La respuesta"
+        },
+        "goal": {
+          "en": "Build the prompt from surviving passages, call the model, return the answer with deduplicated source URLs.",
+          "es": "Armar el prompt con los pasajes sobrevivientes, llamar al modelo y devolver la respuesta con las URLs de origen deduplicadas."
+        },
+        "acceptance": {
+          "en": "Two surviving passages from the same page yield one source URL, not two.",
+          "es": "Dos pasajes sobrevivientes de la misma página producen una URL de origen, no dos."
+        },
+        "hint": {
+          "en": "Deduplicate while preserving order — the best-scoring source should still be listed first.",
+          "es": "Deduplicá preservando el orden — la fuente con mejor score tiene que seguir apareciendo primero."
+        }
+      }
     ],
     "acceptance_tests": {
       "filename": "test_qa.py",
@@ -186,36 +754,126 @@
       }
     ],
     "diff_prompts": [
-      {"en": "Where does your refusal check sit relative to the prompt construction? If it is after, you pay for and wait on a generation call you never needed — find the line and say why the order matters.", "es": "¿Dónde está tu chequeo de negativa respecto de la construcción del prompt? Si está después, pagás y esperás una llamada de generación que nunca necesitabas — encontrá la línea y decí por qué importa el orden."},
-      {"en": "How did your `split` handle the final piece, and did it lose or duplicate characters? Run the lossless test on the original too — it is not obviously correct either.", "es": "¿Cómo manejó tu `split` el último pedazo, perdió o duplicó caracteres? Corré el test de no-pérdida también sobre el original — tampoco es obviamente correcto."},
-      {"en": "Did you guard against a zero-length vector in your scoring function? If not, write the input that crashes it, and then ask why the original guards there instead of at the caller.", "es": "¿Protegiste el caso de vector de longitud cero en tu función de puntuación? Si no, escribí el input que la rompe, y después preguntate por qué el original protege ahí y no en quien la llama."},
-      {"en": "Name one thing your version does better than the reference. There will be one — and noticing it is the point where you stop treating generated code as automatically correct.", "es": "Nombrá una cosa que tu versión hace mejor que la de referencia. Va a haber una — y notarla es el punto donde dejás de tratar al código generado como automáticamente correcto."}
+      {
+        "en": "Where does your refusal check sit relative to the prompt construction? If it is after, you pay for and wait on a generation call you never needed — find the line and say why the order matters.",
+        "es": "¿Dónde está tu chequeo de negativa respecto de la construcción del prompt? Si está después, pagás y esperás una llamada de generación que nunca necesitabas — encontrá la línea y decí por qué importa el orden."
+      },
+      {
+        "en": "How did your `split` handle the final piece, and did it lose or duplicate characters? Run the lossless test on the original too — it is not obviously correct either.",
+        "es": "¿Cómo manejó tu `split` el último pedazo, perdió o duplicó caracteres? Corré el test de no-pérdida también sobre el original — tampoco es obviamente correcto."
+      },
+      {
+        "en": "Did you guard against a zero-length vector in your scoring function? If not, write the input that crashes it, and then ask why the original guards there instead of at the caller.",
+        "es": "¿Protegiste el caso de vector de longitud cero en tu función de puntuación? Si no, escribí el input que la rompe, y después preguntate por qué el original protege ahí y no en quien la llama."
+      },
+      {
+        "en": "Name one thing your version does better than the reference. There will be one — and noticing it is the point where you stop treating generated code as automatically correct.",
+        "es": "Nombrá una cosa que tu versión hace mejor que la de referencia. Va a haber una — y notarla es el punto donde dejás de tratar al código generado como automáticamente correcto."
+      }
     ]
   },
-
   "senior_brief": {
     "architecture_summary": {
       "en": "This is a two-stage system where the interesting engineering is entirely in stage one. Generation quality is effectively a constant you bought from a vendor; retrieval quality is the variable you control, and it sets the ceiling on everything the user sees. That single observation determines where effort belongs: passage size, splitting strategy, and the refusal floor are the levers, while prompt wording is a rounding error.\n\nThe design's real strength is that it fails closed. The floor check happens before the generation call, so an unanswerable question costs nothing and produces a refusal rather than a fabrication. Its real weakness is that the whole quality story rests on one hand-tuned constant that is silently coupled to the embedding model version and is not monitored anywhere.\n\nIf you reviewed this, the highest-value comment is not about the code — it is that the refusal rate must become a monitored metric with an alert, and that below-floor queries must be logged. Without those two, this system can decay into uselessness while every infrastructure dashboard stays green.",
       "es": "Este es un sistema de dos etapas donde toda la ingeniería interesante está en la primera. La calidad de generación es en los hechos una constante que le compraste a un proveedor; la calidad de búsqueda es la variable que controlás, y fija el techo de todo lo que ve el usuario. Esa sola observación determina dónde va el esfuerzo: el tamaño del pasaje, la estrategia de corte y el piso de negativa son las palancas, mientras que la redacción del prompt es un error de redondeo.\n\nLa verdadera fortaleza del diseño es que falla cerrado. El chequeo del piso pasa antes de la llamada de generación, así que una pregunta incontestable no cuesta nada y produce una negativa en vez de una fabricación. Su verdadera debilidad es que toda la historia de calidad se apoya en una constante ajustada a mano que está acoplada en silencio a la versión del modelo de embeddings y no se monitorea en ningún lado.\n\nSi hicieras el review, el comentario de mayor valor no es sobre el código — es que la tasa de negativas tiene que volverse una métrica monitoreada con alerta, y que las consultas por debajo del piso tienen que loguearse. Sin esas dos cosas, este sistema puede degradarse hasta la inutilidad mientras todos los dashboards de infraestructura siguen en verde."
     },
     "review_questions": [
-      {"q": {"en": "A stakeholder asks you to guarantee the service never gives a wrong answer. What do you tell them?", "es": "Un stakeholder te pide que garantices que el servicio nunca da una respuesta equivocada. ¿Qué le decís?"}, "a": {"en": "That no such guarantee exists, and offer the real one instead: every answer is traceable to the exact passages it came from, and the system refuses rather than guessing when it finds nothing close enough. Then make the tradeoff explicit and let them choose — a higher floor means fewer wrong answers and more refusals. Framing it as a dial they control is honest and moves the conversation somewhere useful.", "es": "Que esa garantía no existe, y ofrecer la real en su lugar: toda respuesta es trazable a los pasajes exactos de los que salió, y el sistema se niega en vez de adivinar cuando no encuentra nada suficientemente cercano. Después hacé explícito el trade-off y que elijan — un piso más alto significa menos respuestas equivocadas y más negativas. Presentarlo como una perilla que ellos controlan es honesto y lleva la conversación a un lugar útil."}},
-      {"q": {"en": "Answer quality drops noticeably after a release that touched nothing in this service. What do you check first?", "es": "La calidad de las respuestas baja notoriamente después de un release que no tocó nada de este servicio. ¿Qué revisás primero?"}, "a": {"en": "Whether the embedding model version changed, because that silently invalidates the floor without any code in this repo changing. Second, whether documentation was bulk-edited, which shifts every passage boundary. Both are upstream causes that leave this service's own diff completely clean.", "es": "Si cambió la versión del modelo de embeddings, porque eso invalida el piso en silencio sin que cambie ningún código de este repo. Segundo, si se editó documentación en masa, que corre todos los límites de pasaje. Las dos son causas aguas arriba que dejan el diff de este servicio completamente limpio."}},
-      {"q": {"en": "How would you tell whether a wrong answer was a retrieval failure or a generation failure?", "es": "¿Cómo distinguirías si una respuesta equivocada fue una falla de búsqueda o una de generación?"}, "a": {"en": "Read the cited passages. If they contain the correct answer, generation misread them and the fix is in the prompt or the model. If they do not, retrieval failed and the fix is in splitting, the floor, or adding keyword search. This is precisely why sources are returned, and why a version that returned only prose would be nearly impossible to improve.", "es": "Leer los pasajes citados. Si contienen la respuesta correcta, la generación los leyó mal y el arreglo está en el prompt o el modelo. Si no, falló la búsqueda y el arreglo está en el corte, el piso o agregar búsqueda por palabra clave. Por esto exactamente se devuelven las fuentes, y por eso una versión que devolviera solo prosa sería casi imposible de mejorar."}},
-      {"q": {"en": "What is the first thing you would add, and defend the choice against \"just use a better model\".", "es": "¿Qué es lo primero que agregarías, y defendé la elección contra \"usá un modelo mejor\"?"}, "a": {"en": "Logging of below-floor queries. A better generation model cannot answer from passages it never received, so it cannot fix a retrieval miss — and until you can see which questions are missing, every other improvement is a guess. It is also nearly free, which makes it the highest ratio of information gained to work done in the whole system.", "es": "Loguear las consultas que caen bajo el piso. Un modelo de generación mejor no puede contestar desde pasajes que nunca recibió, así que no puede arreglar una falla de búsqueda — y hasta que no puedas ver qué preguntas se están perdiendo, cualquier otra mejora es una adivinanza. Además es casi gratis, lo que lo vuelve la mejor relación entre información ganada y trabajo hecho de todo el sistema."}}
+      {
+        "q": {
+          "en": "A stakeholder asks you to guarantee the service never gives a wrong answer. What do you tell them?",
+          "es": "Un stakeholder te pide que garantices que el servicio nunca da una respuesta equivocada. ¿Qué le decís?"
+        },
+        "a": {
+          "en": "That no such guarantee exists, and offer the real one instead: every answer is traceable to the exact passages it came from, and the system refuses rather than guessing when it finds nothing close enough. Then make the tradeoff explicit and let them choose — a higher floor means fewer wrong answers and more refusals. Framing it as a dial they control is honest and moves the conversation somewhere useful.",
+          "es": "Que esa garantía no existe, y ofrecer la real en su lugar: toda respuesta es trazable a los pasajes exactos de los que salió, y el sistema se niega en vez de adivinar cuando no encuentra nada suficientemente cercano. Después hacé explícito el trade-off y que elijan — un piso más alto significa menos respuestas equivocadas y más negativas. Presentarlo como una perilla que ellos controlan es honesto y lleva la conversación a un lugar útil."
+        }
+      },
+      {
+        "q": {
+          "en": "Answer quality drops noticeably after a release that touched nothing in this service. What do you check first?",
+          "es": "La calidad de las respuestas baja notoriamente después de un release que no tocó nada de este servicio. ¿Qué revisás primero?"
+        },
+        "a": {
+          "en": "Whether the embedding model version changed, because that silently invalidates the floor without any code in this repo changing. Second, whether documentation was bulk-edited, which shifts every passage boundary. Both are upstream causes that leave this service's own diff completely clean.",
+          "es": "Si cambió la versión del modelo de embeddings, porque eso invalida el piso en silencio sin que cambie ningún código de este repo. Segundo, si se editó documentación en masa, que corre todos los límites de pasaje. Las dos son causas aguas arriba que dejan el diff de este servicio completamente limpio."
+        }
+      },
+      {
+        "q": {
+          "en": "How would you tell whether a wrong answer was a retrieval failure or a generation failure?",
+          "es": "¿Cómo distinguirías si una respuesta equivocada fue una falla de búsqueda o una de generación?"
+        },
+        "a": {
+          "en": "Read the cited passages. If they contain the correct answer, generation misread them and the fix is in the prompt or the model. If they do not, retrieval failed and the fix is in splitting, the floor, or adding keyword search. This is precisely why sources are returned, and why a version that returned only prose would be nearly impossible to improve.",
+          "es": "Leer los pasajes citados. Si contienen la respuesta correcta, la generación los leyó mal y el arreglo está en el prompt o el modelo. Si no, falló la búsqueda y el arreglo está en el corte, el piso o agregar búsqueda por palabra clave. Por esto exactamente se devuelven las fuentes, y por eso una versión que devolviera solo prosa sería casi imposible de mejorar."
+        }
+      },
+      {
+        "q": {
+          "en": "What is the first thing you would add, and defend the choice against \"just use a better model\".",
+          "es": "¿Qué es lo primero que agregarías, y defendé la elección contra \"usá un modelo mejor\"?"
+        },
+        "a": {
+          "en": "Logging of below-floor queries. A better generation model cannot answer from passages it never received, so it cannot fix a retrieval miss — and until you can see which questions are missing, every other improvement is a guess. It is also nearly free, which makes it the highest ratio of information gained to work done in the whole system.",
+          "es": "Loguear las consultas que caen bajo el piso. Un modelo de generación mejor no puede contestar desde pasajes que nunca recibió, así que no puede arreglar una falla de búsqueda — y hasta que no puedas ver qué preguntas se están perdiendo, cualquier otra mejora es una adivinanza. Además es casi gratis, lo que lo vuelve la mejor relación entre información ganada y trabajo hecho de todo el sistema."
+        }
+      }
     ]
   },
-
   "flashcards": [
-    {"front": {"en": "Where does the refusal check sit, and why there?", "es": "¿Dónde está el chequeo de negativa y por qué ahí?"}, "back": {"en": "Before the prompt is built, so an unanswerable question never costs a generation call.", "es": "Antes de armar el prompt, así una pregunta incontestable nunca cuesta una llamada de generación."}},
-    {"front": {"en": "Why does each passage store its source URL?", "es": "¿Por qué cada pasaje guarda su URL de origen?"}, "back": {"en": "For citations, for debugging retrieval-vs-generation failures, and to delete by URL so re-ingestion is idempotent.", "es": "Para citas, para debuggear fallas de búsqueda vs generación, y para borrar por URL y que la reingesta sea idempotente."}},
-    {"front": {"en": "What silently invalidates the 0.72 floor?", "es": "¿Qué invalida en silencio el piso de 0,72?"}, "back": {"en": "Any change to the embedding model — scores shift and no code in this repo changed.", "es": "Cualquier cambio en el modelo de embeddings — los scores se corren y ningún código de este repo cambió."}},
-    {"front": {"en": "Advance step when splitting with size S and overlap O?", "es": "¿Cuánto avanza el cursor al cortar con tamaño S y superposición O?"}, "back": {"en": "S − O, not S.", "es": "S − O, no S."}}
+    {
+      "front": {
+        "en": "Where does the refusal check sit, and why there?",
+        "es": "¿Dónde está el chequeo de negativa y por qué ahí?"
+      },
+      "back": {
+        "en": "Before the prompt is built, so an unanswerable question never costs a generation call.",
+        "es": "Antes de armar el prompt, así una pregunta incontestable nunca cuesta una llamada de generación."
+      }
+    },
+    {
+      "front": {
+        "en": "Why does each passage store its source URL?",
+        "es": "¿Por qué cada pasaje guarda su URL de origen?"
+      },
+      "back": {
+        "en": "For citations, for debugging retrieval-vs-generation failures, and to delete by URL so re-ingestion is idempotent.",
+        "es": "Para citas, para debuggear fallas de búsqueda vs generación, y para borrar por URL y que la reingesta sea idempotente."
+      }
+    },
+    {
+      "front": {
+        "en": "What silently invalidates the 0.72 floor?",
+        "es": "¿Qué invalida en silencio el piso de 0,72?"
+      },
+      "back": {
+        "en": "Any change to the embedding model — scores shift and no code in this repo changed.",
+        "es": "Cualquier cambio en el modelo de embeddings — los scores se corren y ningún código de este repo cambió."
+      }
+    },
+    {
+      "front": {
+        "en": "Advance step when splitting with size S and overlap O?",
+        "es": "¿Cuánto avanza el cursor al cortar con tamaño S y superposición O?"
+      },
+      "back": {
+        "en": "S − O, not S.",
+        "es": "S − O, no S."
+      }
+    }
   ],
-
   "next_steps": [
-    {"en": "Add below-floor query logging to your own rebuild, then read your log after twenty questions. It will change what you think the system's problem is.", "es": "Agregá el logueo de consultas bajo el piso a tu propia reconstrucción y leé tu log después de veinte preguntas. Va a cambiar lo que creés que es el problema del sistema."},
-    {"en": "Rebuild the splitter to break on headings first and character counts second, then measure whether answers actually improve. Measuring is the harder half.", "es": "Reconstruí el cortador para partir primero por encabezados y después por cantidad de caracteres, y medí si las respuestas de verdad mejoran. Medir es la mitad más difícil."},
-    {"en": "Add keyword search alongside the vector search and merge the results. You will immediately discover why deciding how to merge two ranked lists is its own genuine problem.", "es": "Agregá búsqueda por palabra clave junto a la vectorial y combiná los resultados. Vas a descubrir enseguida por qué decidir cómo combinar dos listas rankeadas es un problema propio y real."}
+    {
+      "en": "Add below-floor query logging to your own rebuild, then read your log after twenty questions. It will change what you think the system's problem is.",
+      "es": "Agregá el logueo de consultas bajo el piso a tu propia reconstrucción y leé tu log después de veinte preguntas. Va a cambiar lo que creés que es el problema del sistema."
+    },
+    {
+      "en": "Rebuild the splitter to break on headings first and character counts second, then measure whether answers actually improve. Measuring is the harder half.",
+      "es": "Reconstruí el cortador para partir primero por encabezados y después por cantidad de caracteres, y medí si las respuestas de verdad mejoran. Medir es la mitad más difícil."
+    },
+    {
+      "en": "Add keyword search alongside the vector search and merge the results. You will immediately discover why deciding how to merge two ranked lists is its own genuine problem.",
+      "es": "Agregá búsqueda por palabra clave junto a la vectorial y combiná los resultados. Vas a descubrir enseguida por qué decidir cómo combinar dos listas rankeadas es un problema propio y real."
+    }
   ]
 }

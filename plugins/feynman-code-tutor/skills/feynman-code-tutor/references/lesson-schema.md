@@ -115,6 +115,12 @@ JSON and is trimmed" is useful; "the input layer processes the request" is noise
 `id` — lowercase slug, stable, used for progress keys.
 
 `one_liner` — shown *before* the gate, so it must orient without teaching. Name the question the
+`rubric` is optional but strongly recommended: 3-6 bilingual strings, each one a checkable claim
+the learner's explanation must contain. The dossier shows them after the explanation is submitted
+and before the reference is revealed, then locks them — a concept marked short reads UNVERIFIED in
+the report. A box may not contain any of that concept's `banned_terms`; the build rejects it,
+because the rubric is visible while they write and would hand them the word the gate removes.
+
 concept answers rather than the answer: "How does the system answer questions about documents it
 was never trained on?" not "It embeds chunks and retrieves by cosine similarity."
 

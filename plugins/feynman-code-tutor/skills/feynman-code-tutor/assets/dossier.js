@@ -29,6 +29,8 @@
   S.revealed = S.revealed || {};
   S.ms = S.ms || {};
   S.glass = S.glass || {};
+  S.marks = S.marks || {};    // per-concept self-marks, ticked before the reveal
+  S.marked = S.marked || {};   // concepts whose marks are locked in
   S.theme = S.theme || "auto";
 
   function save() { store.set(S); }
@@ -90,7 +92,23 @@
 
   function blankDone() { return words(S.text["blank"]) >= 60 || !!S.glass["sec:concepts"]; }
 
-  function expDone(cid) { return !!S.submitted[cid + ".exp"] || !!S.glass[cid]; }
+  function rubricN(cid) { return (CFG.rubricCounts && CFG.rubricCounts[cid]) || 0; }
+
+  function ticked(cid) {
+    var m = S.marks[cid] || {};
+    return Object.keys(m).filter(function (k) { return m[k]; }).length;
+  }
+
+  /* A rubric turns the explanation into something gradeable, so the reference
+     stays shut until the marks are in. Without a rubric this is the old
+     behaviour: submitting reveals. */
+  function refShown(cid) {
+    if (S.glass[cid]) return true;
+    if (!S.submitted[cid + ".exp"]) return false;
+    return rubricN(cid) ? !!S.marked[cid] : true;
+  }
+
+  function expDone(cid) { return refShown(cid) || !!S.glass[cid]; }
 
   function gapsDone(cid) {
     var n = CFG.gapCounts[cid] || 0;
@@ -148,8 +166,12 @@
 
   function conceptStatus(cid) {
     if (S.glass[cid]) return "u";
-    if (conceptDone(cid)) return "v";
-    return "n";
+    if (!conceptDone(cid)) return "n";
+    // You said yourself the explanation was missing something. Recording that
+    // as VERIFIED would make the report agree with you instead of with the work.
+    var n = rubricN(cid);
+    if (n && ticked(cid) < n) return "u";
+    return "v";
   }
 
   /* ---------------- progress ---------------- */
@@ -214,6 +236,31 @@
     Object.keys(S.revealed).forEach(function (k) {
       var el = document.getElementById("rev-" + k.replace(/\./g, "-"));
       if (el && S.revealed[k]) el.classList.add("shown");
+    });
+
+    // the mark-yourself stage sits between submitting and the reference
+    CFG.conceptIds.forEach(function (cid) {
+      var n = rubricN(cid);
+      if (!n) return;
+      var box = document.getElementById("rub-" + cid);
+      if (box) {
+        box.classList.toggle("shown", !!S.submitted[cid + ".exp"] && !S.glass[cid]);
+        box.classList.toggle("locked", !!S.marked[cid]);
+      }
+      $$('[data-mark="' + CSS.escape(cid) + '"]').forEach(function (cb) {
+        cb.checked = !!(S.marks[cid] || {})[cb.getAttribute("data-box")];
+        cb.disabled = !!S.marked[cid];
+      });
+      var btn = $('[data-revealref="' + CSS.escape(cid) + '"]');
+      if (btn) btn.style.display = S.marked[cid] ? "none" : "";
+      var sc = $('.score[data-score="' + CSS.escape(cid) + '"]');
+      if (sc) {
+        sc.textContent = S.marked[cid] ? (ticked(cid) + "/" + n + " " + t("score")) : "";
+        sc.classList.toggle("short", S.marked[cid] && ticked(cid) < n);
+      }
+      // the reference only opens once the marks are locked
+      var ref = document.getElementById("rev-" + cid + "-exp");
+      if (ref && !refShown(cid)) ref.classList.remove("shown");
     });
 
     // section locks
@@ -304,10 +351,19 @@
 
   document.addEventListener("change", function (e) {
     var cb = e.target.closest("[data-ms]");
-    if (!cb) return;
-    S.ms[cb.getAttribute("data-ms")] = cb.checked;
-    save();
-    refresh();
+    if (cb) {
+      S.ms[cb.getAttribute("data-ms")] = cb.checked;
+      save(); refresh();
+      return;
+    }
+    var mk = e.target.closest("[data-mark]");
+    if (mk) {
+      var cid = mk.getAttribute("data-mark");
+      if (S.marked[cid]) { mk.checked = !mk.checked; return; }   // locked
+      S.marks[cid] = S.marks[cid] || {};
+      S.marks[cid][mk.getAttribute("data-box")] = mk.checked;
+      save(); refresh();
+    }
   });
 
   document.addEventListener("click", function (e) {
@@ -323,10 +379,24 @@
     if ((el = e.target.closest("[data-submit]"))) {
       var k = el.getAttribute("data-submit");
       S.submitted[k] = true;
-      S.revealed[k === "rebuild.notes" ? "rebuild.notes" : k] = true;
+      var cid = k.indexOf(".exp") > 0 ? k.slice(0, k.indexOf(".exp")) : null;
+      // With a rubric, submitting opens the marking stage, not the answer.
+      var toRubric = cid && rubricN(cid) && !S.marked[cid];
+      if (!toRubric) S.revealed[k] = true;
       save(); refresh();
-      var box = document.getElementById("rev-" + k.replace(/\./g, "-"));
+      var box = document.getElementById(
+        toRubric ? "rub-" + cid : "rev-" + k.replace(/\./g, "-"));
       if (box) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
+    if ((el = e.target.closest("[data-revealref]"))) {
+      var rc = el.getAttribute("data-revealref");
+      S.marked[rc] = true;              // locks the marks; they cannot be edited after
+      S.revealed[rc + ".exp"] = true;
+      save(); refresh();
+      var rb = document.getElementById("rev-" + rc + "-exp");
+      if (rb) rb.scrollIntoView({ behavior: "smooth", block: "nearest" });
       return;
     }
 
@@ -344,7 +414,7 @@
       if (!window.confirm(msg)) return;
       S.glass[g] = true;
       if (g === "rebuild") S.revealed["rebuild.notes"] = true;
-      if (CFG.conceptIds.indexOf(g) !== -1) S.revealed[g + ".exp"] = true;
+      if (CFG.conceptIds.indexOf(g) !== -1) { S.revealed[g + ".exp"] = true; S.marked[g] = true; }
       save(); refresh();
       return;
     }

@@ -108,6 +108,21 @@ def validate(data):
         ana = c.get("analogy") or {}
         check_bi(ana.get("text"), f"{p}.analogy.text", langs)
         check_bi(ana.get("breaks_down"), f"{p}.analogy.breaks_down", langs)
+        # Optional, but it is what turns a free-form explanation into something
+        # gradeable. Each entry is one checkable claim the answer must contain.
+        for j, rb in enumerate(c.get("rubric") or []):
+            check_bi(rb, f"{p}.rubric[{j}]", langs)
+            # A box must not spend the very word the learner is forbidden to
+            # use. The rubric is on screen while they write, so a banned term
+            # in it hands them the shield the gate exists to take away.
+            if isinstance(rb, dict) and isinstance(bt, list):
+                for lg in langs:
+                    low = str(rb.get(lg, "")).lower()
+                    leaked = [t for t in bt if str(t).lower() in low]
+                    if leaked:
+                        err(f"{p}.rubric[{j}].{lg}",
+                            f"uses banned term(s) {leaked} from this concept -- "
+                            "say the mechanism instead")
         gqs = c.get("gap_questions") or []
         if len(gqs) < 2:
             err(f"{p}.gap_questions", f"expected 3-5 questions, got {len(gqs)}")
@@ -281,6 +296,13 @@ UI = {
     "need_words": {"en": "need", "es": "faltan"},
     "submit": {"en": "Submit and compare", "es": "Enviar y comparar"},
     "reference": {"en": "The reference explanation", "es": "La explicación de referencia"},
+    "mark": {"en": "Mark yourself — before you see the reference",
+             "es": "Calificate — antes de ver la referencia"},
+    "mark_help": {
+        "en": "Tick only what you actually wrote. These lock when you reveal: marking yourself after reading the answer measures nothing except how agreeable you are.",
+        "es": "Marcá solo lo que realmente escribiste. Se bloquean al revelar: calificarte después de leer la respuesta no mide nada salvo lo complaciente que sos."},
+    "reveal_ref": {"en": "Reveal the reference", "es": "Ver la referencia"},
+    "score": {"en": "boxes", "es": "casillas"},
     "your_analogy": {"en": "Now forge your own analogy", "es": "Ahora forjá tu propia analogía"},
     "analogy_prompt": {
         "en": "Finish the sentence: \"It is like...\" — and then say where your analogy breaks down.",
@@ -434,6 +456,24 @@ def render_concepts(concepts):
         <div class="revealbox" id="rev-{cid}-gap{j}">{bi(g['a'])}{anchor(g.get('anchor'))}</div>
       </div>""" for j, g in enumerate(c["gap_questions"]))
 
+        # The mark-yourself gate. Present only when the author supplied a
+        # rubric; without one, submit reveals the reference as it always did.
+        boxes = c.get("rubric") or []
+        rubric = ""
+        if boxes:
+            lis = "".join(
+                f'<li><input type="checkbox" data-mark="{cid}" data-box="{k}">'
+                f'<label>{bi(b, "span", "", True)}</label></li>'
+                for k, b in enumerate(boxes))
+            rubric = (
+                f'<div class="rubricbox" id="rub-{cid}">'
+                f'<h4>{bis(UI["mark"])}</h4>'
+                f'<div class="hint">{bi(UI["mark_help"])}</div>'
+                f'<ul class="rubric">{lis}</ul>'
+                f'<button class="btn" data-revealref="{cid}">{u("reveal_ref")}</button>'
+                f'<div class="score" data-score="{cid}"></div>'
+                f'</div>')
+
         sen = c["senior"]
         fails = "".join(
             f'<div class="fm"><div class="fmhead">{bi(f["mode"], "div", "mode")}</div>'
@@ -462,6 +502,7 @@ def render_concepts(concepts):
       <div class="jargon" data-for="{cid}.exp"></div>
       <button class="btn" data-submit="{cid}.exp">{u('submit')}</button>
       <button class="btn glass" data-glass="{cid}">{u('breakglass')}</button>
+      {rubric}
       <div class="revealbox" id="rev-{cid}-exp">
         <h4>{u('reference')}</h4>
         {bi(c['simple_explanation'])}
@@ -624,6 +665,7 @@ def build(data, langs):
         f'<button class="langbtn" data-setlang="{lg}">{lg.upper()}</button>' for lg in langs)
 
     concept_ids = json.dumps([c["id"] for c in data["concepts"]])
+    rubric_counts = json.dumps({c["id"]: len(c.get("rubric") or []) for c in data["concepts"]})
     gap_counts = json.dumps({c["id"]: len(c["gap_questions"]) for c in data["concepts"]})
     ms_count = len(data["rebuild"].get("milestones") or [])
     names = json.dumps({c["id"]: c["name"] for c in data["concepts"]})
@@ -642,12 +684,14 @@ def build(data, langs):
     cfg = json.dumps({
         "conceptIds": json.loads(concept_ids),
         "gapCounts": json.loads(gap_counts),
+        "rubricCounts": json.loads(rubric_counts),
         "msCount": ms_count,
         "names": json.loads(names),
         "langs": langs,
         "defaultLang": default_lang,
         "systemName": meta.get("system_name", "system"),
-        "ui": {k: UI[k] for k in ("verified", "unverified", "incomplete", "banned_hit", "need_words")},
+        "ui": {k: UI[k] for k in ("verified", "unverified", "incomplete",
+                                  "banned_hit", "need_words", "score")},
     }, ensure_ascii=False)
     cfg = js_embed(cfg)
 
