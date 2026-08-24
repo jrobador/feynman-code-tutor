@@ -59,7 +59,7 @@ system you never actually reconstructed. Those stamps are next week's study plan
 ### Claude Code — personal skill
 
 ```bash
-git clone https://github.com/jrobador37/feynman-code-tutor.git
+git clone https://github.com/jrobador/feynman-code-tutor.git
 cd feynman-code-tutor
 ./install.sh
 ```
@@ -71,7 +71,7 @@ That copies the skill into `~/.claude/skills/feynman-code-tutor/`. Restart Claud
 ### Claude Code — as a plugin
 
 ```
-/plugin marketplace add jrobador37/feynman-code-tutor
+/plugin marketplace add jrobador/feynman-code-tutor
 /plugin install feynman-code-tutor@feynman-code-tutor
 ```
 

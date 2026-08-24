@@ -55,6 +55,13 @@ Spanish. Each one should be as long as it needs to be.
 ## Adding a third language later
 
 The template renders any set of language codes present in the bilingual objects and builds the
-toggle from `meta.languages`. Adding `"pt"` means adding that key to *every* bilingual object —
-the build script will list any it is missing. Only take this on when the user asks for it: it
-multiplies authoring cost with no benefit to a bilingual reader.
+toggle from `meta.languages`. Adding `"pt"` takes two steps, not one:
+
+1. Add that key to *every* bilingual object in `lesson.json` — the build script will list any it
+   is missing.
+2. Add it to the `UI` and `PLACEHOLDERS` dicts in `scripts/build_lesson.py`. Those hold the
+   chrome — section headings, button labels, the report — and ship `en`/`es` only. Without
+   step 2 the dossier renders your content in Portuguese and every label in English.
+
+Only take this on when the user asks for it: it multiplies authoring cost with no benefit to a
+bilingual reader.

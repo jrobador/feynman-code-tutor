@@ -237,7 +237,11 @@ def bi(obj, tag="div", cls="", inline=False):
         obj = {lg: obj for lg in LANGS}
     out = []
     for lg in LANGS:
-        body = html.escape(obj.get(lg, "")) if inline else md(obj.get(lg, ""))
+        # Lesson content is validated per-language, so the fallback only ever fires for the
+        # UI chrome below, which ships en/es. A third language gets English labels rather
+        # than blank ones until its keys are added to UI and PLACEHOLDERS.
+        text = obj.get(lg) or obj.get("en") or ""
+        body = html.escape(text) if inline else md(text)
         out.append(f'<{tag} class="lb {cls}" data-lang="{lg}">{body}</{tag}>')
     return "".join(out)
 
@@ -418,7 +422,9 @@ def render_concepts(concepts):
     cards = []
     for i, c in enumerate(concepts):
         cid = c["id"]
-        banned = json.dumps(c["banned_terms"])
+        # Escaped for an HTML attribute: a term with an apostrophe or an angle bracket
+        # would otherwise close the attribute and silently kill the jargon detector.
+        banned = html.escape(json.dumps(c["banned_terms"]), quote=True)
         gaps = "".join(f"""
       <div class="gap">
         <div class="q">{bi(g['q'])}</div>
@@ -439,7 +445,7 @@ def render_concepts(concepts):
             for a in sen.get("alternatives") or [])
 
         cards.append(f"""
-  <article class="concept" data-cid="{cid}" data-banned='{banned}'>
+  <article class="concept" data-cid="{cid}" data-banned="{banned}">
     <header class="chead">
       <span class="cnum">{i+1:02d}</span>
       <div><h3>{bis(c['name'])}</h3>{bi(c['one_liner'], 'div', 'oneliner')}</div>
@@ -592,6 +598,16 @@ CSS = Path(__file__).parent.parent / "assets" / "dossier.css"
 JS = Path(__file__).parent.parent / "assets" / "dossier.js"
 
 
+def js_embed(payload):
+    """Make a JSON blob safe to inline inside a <script> tag.
+
+    An author string containing '</script>' would otherwise end the tag and break the
+    whole page; U+2028/U+2029 are legal in JSON but terminate a JavaScript line.
+    """
+    return (payload.replace("</", "<\\/")
+                   .replace("\u2028", "\\u2028")
+                   .replace("\u2029", "\\u2029"))
+
 def build(data, langs):
     global LANGS
     LANGS = langs
@@ -632,6 +648,7 @@ def build(data, langs):
         "systemName": meta.get("system_name", "system"),
         "ui": {k: UI[k] for k in ("verified", "unverified", "incomplete", "banned_hit", "need_words")},
     }, ensure_ascii=False)
+    cfg = js_embed(cfg)
 
     title_plain = meta["title"].get(default_lang, "")
     return f"""<!doctype html>

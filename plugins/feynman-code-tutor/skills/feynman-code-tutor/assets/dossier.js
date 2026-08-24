@@ -124,7 +124,9 @@
   function statusOf(sec) {
     switch (sec) {
       case "blank":
-        return words(S.text["blank"]) >= 60 ? "v" : (words(S.text["blank"]) > 0 ? "n" : "n");
+        if (words(S.text["blank"]) >= 60) return "v";
+        // Skipping the blank page via break-glass on concepts is a real bypass; record it.
+        return S.glass["sec:concepts"] ? "u" : "n";
       case "concepts": {
         if (S.glass["sec:concepts"] && !CFG.conceptIds.some(function (c) { return S.submitted[c + ".exp"]; })) return "u";
         var anyGlass = CFG.conceptIds.some(function (c) { return S.glass[c]; });

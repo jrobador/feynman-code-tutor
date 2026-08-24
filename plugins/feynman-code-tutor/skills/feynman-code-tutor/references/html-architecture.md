@@ -29,8 +29,10 @@ missing translation is a build-time error rather than a silent English fallback.
 placeholders cannot work that way, so they carry `data-ph-en` / `data-ph-es` and the runtime swaps
 the `placeholder` attribute on toggle.
 
-Adding a language means adding its key to every bilingual object plus `meta.languages`. The
-validator lists every field that is missing it.
+Adding a language means adding its key to every bilingual object plus `meta.languages`, **and**
+adding it to the `UI` and `PLACEHOLDERS` dicts in `build_lesson.py`, which hold the chrome and
+ship `en`/`es` only. The validator lists every lesson field that is missing the key; it cannot
+see the chrome, so an unlisted language falls back to English labels rather than blank ones.
 
 ## The gates
 

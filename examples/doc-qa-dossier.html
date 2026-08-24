@@ -251,7 +251,7 @@ summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
   <h2><span class="secnum">02</span><span class="lb " data-lang="en">The load-bearing ideas</span><span class="lb " data-lang="es">Las ideas que sostienen todo</span></h2>
   <div class="lockmsg"><div class="lb " data-lang="en"><p>This section unlocks when the work above is done.</p></div><div class="lb " data-lang="es"><p>Esta sección se abre cuando termines lo de arriba.</p></div><button class="btn glass" data-glass="sec:concepts"><span class="lb " data-lang="en">Break glass (marks this UNVERIFIED)</span><span class="lb " data-lang="es">Romper el vidrio (queda marcado SIN VERIFICAR)</span></button></div>
   <div class="secbody">
-  <article class="concept" data-cid="retrieve-before-generate" data-banned='["embed", "vector", "semantic", "retrieval", "RAG", "similarity", "index", "corpus"]'>
+  <article class="concept" data-cid="retrieve-before-generate" data-banned="[&quot;embed&quot;, &quot;vector&quot;, &quot;semantic&quot;, &quot;retrieval&quot;, &quot;RAG&quot;, &quot;similarity&quot;, &quot;index&quot;, &quot;corpus&quot;]">
     <header class="chead">
       <span class="cnum">01</span>
       <div><h3><span class="lb " data-lang="en">Look it up, then answer</span><span class="lb " data-lang="es">Buscar primero, contestar después</span></h3><div class="lb oneliner" data-lang="en"><p>How does a model answer questions about documents it has never read?</p></div><div class="lb oneliner" data-lang="es"><p>¿Cómo contesta un modelo preguntas sobre documentos que nunca leyó?</p></div></div>
@@ -320,7 +320,7 @@ summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
       <div class="srow"><b><span class="lb " data-lang="en">Alternatives not taken</span><span class="lb " data-lang="es">Alternativas descartadas</span></b><div class="alt"><div class="lb optname" data-lang="en"><p>Fine-tune a model on the help pages</p></div><div class="lb optname" data-lang="es"><p>Hacer fine-tune de un modelo con las páginas de ayuda</p></div><div class="fmrow"><b><span class="lb " data-lang="en">Why not</span><span class="lb " data-lang="es">Por qué no</span></b><div class="lb " data-lang="en"><p>It cannot cite, cannot forget a deleted page, and goes stale the moment anyone edits documentation. It also fails silently: a stale fine-tune sounds exactly as confident as a fresh one.</p></div><div class="lb " data-lang="es"><p>No puede citar, no puede olvidar una página borrada y queda obsoleto apenas alguien edita la documentación. Además falla en silencio: un fine-tune viejo suena exactamente igual de seguro que uno fresco.</p></div></div></div><div class="alt"><div class="lb optname" data-lang="en"><p>Plain keyword search feeding the same prompt</p></div><div class="lb optname" data-lang="es"><p>Búsqueda por palabra clave común alimentando el mismo prompt</p></div><div class="fmrow"><b><span class="lb " data-lang="en">Why not</span><span class="lb " data-lang="es">Por qué no</span></b><div class="lb " data-lang="en"><p>It is cheaper and genuinely better for exact identifiers and error codes — which is why the honest end state here is both, not one. It was skipped in v1 only because support questions are paraphrase-heavy, and that is a decision worth revisiting with the below-floor log in hand.</p></div><div class="lb " data-lang="es"><p>Es más barata y de verdad mejor para identificadores exactos y códigos de error — por eso el final honesto acá es tener las dos, no una. Se salteó en la v1 solo porque las preguntas de soporte son muy parafraseadas, y es una decisión que vale la pena revisar con el log de consultas bajo el piso en la mano.</p></div></div></div></div>
     </div>
   </article>
-  <article class="concept" data-cid="chunking" data-banned='["chunk", "chunking", "token", "embedding", "vector", "granularity", "overlap window"]'>
+  <article class="concept" data-cid="chunking" data-banned="[&quot;chunk&quot;, &quot;chunking&quot;, &quot;token&quot;, &quot;embedding&quot;, &quot;vector&quot;, &quot;granularity&quot;, &quot;overlap window&quot;]">
     <header class="chead">
       <span class="cnum">02</span>
       <div><h3><span class="lb " data-lang="en">Cutting pages into passages</span><span class="lb " data-lang="es">Cortar páginas en pasajes</span></h3><div class="lb oneliner" data-lang="en"><p>Why does a whole page make a bad unit of search, and what decides where the cuts go?</p></div><div class="lb oneliner" data-lang="es"><p>¿Por qué una página entera es una mala unidad de búsqueda y qué decide dónde van los cortes?</p></div></div>
@@ -383,7 +383,7 @@ summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
       <div class="srow"><b><span class="lb " data-lang="en">Alternatives not taken</span><span class="lb " data-lang="es">Alternativas descartadas</span></b><div class="alt"><div class="lb optname" data-lang="en"><p>Structure-aware splitting on Markdown headings</p></div><div class="lb optname" data-lang="es"><p>Corte consciente de la estructura por encabezados Markdown</p></div><div class="fmrow"><b><span class="lb " data-lang="en">Why not</span><span class="lb " data-lang="es">Por qué no</span></b><div class="lb " data-lang="en"><p>Strictly better for this corpus and the obvious v2. It was skipped in v1 only because the source pages are HTML of inconsistent quality and the heading extraction is its own small project.</p></div><div class="lb " data-lang="es"><p>Estrictamente mejor para este corpus y la v2 obvia. Se salteó en la v1 solo porque las páginas fuente son HTML de calidad despareja y extraer los encabezados es un proyecto chico en sí mismo.</p></div></div></div></div>
     </div>
   </article>
-  <article class="concept" data-cid="similarity-floor" data-banned='["threshold", "cosine", "similarity", "score", "vector", "embedding", "confidence"]'>
+  <article class="concept" data-cid="similarity-floor" data-banned="[&quot;threshold&quot;, &quot;cosine&quot;, &quot;similarity&quot;, &quot;score&quot;, &quot;vector&quot;, &quot;embedding&quot;, &quot;confidence&quot;]">
     <header class="chead">
       <span class="cnum">03</span>
       <div><h3><span class="lb " data-lang="en">The floor that lets it say &quot;I don&#x27;t know&quot;</span><span class="lb " data-lang="es">El piso que le permite decir &quot;no sé&quot;</span></h3><div class="lb oneliner" data-lang="en"><p>Search always returns its five best guesses. What stops the system from answering from five bad ones?</p></div><div class="lb oneliner" data-lang="es"><p>La búsqueda siempre devuelve sus cinco mejores tentativas. ¿Qué evita que el sistema conteste a partir de cinco malas?</p></div></div>
@@ -834,7 +834,9 @@ def ask(question):
   function statusOf(sec) {
     switch (sec) {
       case "blank":
-        return words(S.text["blank"]) >= 60 ? "v" : (words(S.text["blank"]) > 0 ? "n" : "n");
+        if (words(S.text["blank"]) >= 60) return "v";
+        // Skipping the blank page via break-glass on concepts is a real bypass; record it.
+        return S.glass["sec:concepts"] ? "u" : "n";
       case "concepts": {
         if (S.glass["sec:concepts"] && !CFG.conceptIds.some(function (c) { return S.submitted[c + ".exp"]; })) return "u";
         var anyGlass = CFG.conceptIds.some(function (c) { return S.glass[c]; });
