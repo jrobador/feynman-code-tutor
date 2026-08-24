@@ -153,13 +153,23 @@ in Spanish, not transliterated. Keep code, identifiers, and file paths untransla
 **`references/bilingual.md`**.
 
 ```bash
-python3 scripts/build_lesson.py lesson.json -o feynman-<system-name>.html
+python3 scripts/build_lesson.py lesson.json --repo-root "$(pwd)"
 ```
 
-**Keep the `lesson.json` next to the HTML you deliver** — save it as
-`feynman-<system-name>.lesson.json`. The HTML is a build artifact; the JSON is the source. Without
-it a typo means re-authoring the whole dossier from scratch, and there is no way to revise, extend,
-or re-target the lesson later. Tell the user both files are theirs.
+**Never write the dossier into the repo you are studying.** A dossier is not that project's
+source, and leaving it there means two untracked files in someone else's `git status` forever —
+on a work repo, files they then have to remember not to commit.
+
+With no `-o`, the script collects both files into `$FEYNMAN_HOME`, or `~/feynman/` if that is
+unset: `~/feynman/<system-name>.html` and `~/feynman/<system-name>.lesson.json`. Tell the user
+both paths. Author `lesson.json` in a temp location, not in their tree.
+
+Pass `--repo-root` with the absolute path the anchors are relative to. Once the lesson lives
+outside the repo, nothing else records which repo `src/foo.py:31` belongs to, and the anchors
+become unverifiable — which defeats the one thing they are for.
+
+The saved `.lesson.json` is the source; the HTML is a build artifact. Without the source a typo
+costs a full re-authoring pass and the dossier can never be revised, extended, or re-targeted.
 
 The script validates the schema, reports what is missing in plain language, and emits one
 self-contained HTML file — no network, no CDN, no build step. It owns all the interactive

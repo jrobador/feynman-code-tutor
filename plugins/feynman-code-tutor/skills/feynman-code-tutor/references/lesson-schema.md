@@ -7,6 +7,15 @@ Strings support a small subset of Markdown: `**bold**`, `` `code` ``, `- ` bulle
 lists, blank-line paragraphs, and fenced code blocks with ```` ```lang ````. Nothing else — no
 tables, no links. If you need more, you are putting reference material where an exercise belongs.
 
+## Where the built files go
+
+With no `-o`, `build_lesson.py` collects the dossier and a copy of its lesson into
+`$FEYNMAN_HOME`, or `~/feynman/` when that is unset. Never into the repo being studied — a
+dossier is not that project's source, and leaving it there means permanent untracked files in
+someone else's `git status`.
+
+---
+
 **Anchors** are `path/to/file.py:LINE` or `path/to/file.py:12-40`. They render as a small monospace
 tag next to the claim. Any field named `anchor` is required to be real — invented anchors destroy
 the learner's ability to verify you, which is the one thing the dossier is for.
@@ -40,6 +49,8 @@ the learner's ability to verify you, which is the one thing the dossier is for.
 | `subtitle` | bilingual | One line on what the learner will be able to do at the end. |
 | `system_name` | string | Slug used in the filename and report. |
 | `source_root` | string | Repo path or description of what was analysed. |
+| `repo_root` | string | Absolute path the anchors resolve against. Written by `--repo-root`, not by hand. Machine-specific: strip it if you share the lesson. Without it, a lesson stored outside its repo has unverifiable anchors. |
+| `languages` | list | Language codes to render, e.g. `["en", "es"]`. Default `["en", "es"]`. Adding one also needs the `UI` and `PLACEHOLDERS` dicts in `build_lesson.py`; see `bilingual.md`. |
 | `default_lang` | `"en"` \| `"es"` | Default `"en"`. |
 | `estimated_minutes` | int | Be honest. A dossier that claims 30 minutes and takes 3 hours gets abandoned at minute 40. |
 

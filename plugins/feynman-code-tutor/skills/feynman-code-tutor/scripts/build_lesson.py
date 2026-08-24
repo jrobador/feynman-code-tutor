@@ -12,6 +12,7 @@ write content. See references/lesson-schema.md for the contract.
 import argparse
 import html
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -680,10 +681,29 @@ def build(data, langs):
 </html>"""
 
 
+def default_out_dir():
+    """Where dossiers are collected.
+
+    Never the repo being studied: a dossier and its lesson are not that
+    project's source, and leaving them there means untracked files in someone
+    else's git status forever. One directory per machine keeps them together
+    and makes them findable months later.
+    """
+    env = os.environ.get("FEYNMAN_HOME")
+    return Path(env).expanduser() if env else Path.home() / "feynman"
+
+
 def main():
     ap = argparse.ArgumentParser(description="Build a Feynman dossier from lesson.json")
     ap.add_argument("lesson")
-    ap.add_argument("-o", "--output", default=None)
+    ap.add_argument("-o", "--output", default=None,
+                    help="explicit output path (overrides --out-dir)")
+    ap.add_argument("--out-dir", default=None,
+                    help="directory to collect dossiers in "
+                         "(default: $FEYNMAN_HOME, else ~/feynman)")
+    ap.add_argument("--repo-root", default=None,
+                    help="absolute path the anchors are relative to; recorded in the "
+                         "saved lesson so the anchors stay resolvable from elsewhere")
     args = ap.parse_args()
 
     try:
@@ -698,10 +718,36 @@ def main():
             + "\n".join(ERRORS) + "\n\nSee references/lesson-schema.md for the contract.\n")
         sys.exit(1)
 
-    out = args.output or f"feynman-{data['meta'].get('system_name', 'system')}.html"
-    Path(out).write_text(build(data, langs), encoding="utf-8")
-    size = Path(out).stat().st_size / 1024
-    print(f"Built {out} ({size:.0f} KB) — {len(data['concepts'])} concepts, "
+    name = data["meta"].get("system_name", "system")
+
+    if args.output:
+        out = Path(args.output)
+    else:
+        out_dir = Path(args.out_dir).expanduser() if args.out_dir else default_out_dir()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out = out_dir / f"{name}.html"
+
+    if args.repo_root:
+        data["meta"]["repo_root"] = str(Path(args.repo_root).resolve())
+
+    # The HTML is a build artifact; the lesson is the source. Save the source
+    # beside it or a typo costs a full re-authoring pass and the dossier can
+    # never be revised, extended, or re-targeted.
+    #
+    # Only when collecting into the dossier directory. An explicit -o means the
+    # caller is driving and does not want an extra file appearing next to it.
+    saved = None
+    if not args.output:
+        saved = out.parent / f"{name}.lesson.json"
+        if Path(args.lesson).resolve() != saved.resolve():
+            saved.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+                             encoding="utf-8")
+
+    out.write_text(build(data, langs), encoding="utf-8")
+    size = out.stat().st_size / 1024
+    if saved:
+        print(f"Lesson {saved}")
+    print(f"Built {out} ({size:.0f} KB) - {len(data['concepts'])} concepts, "
           f"{len(data['rebuild'].get('milestones') or [])} milestones, langs: {', '.join(langs)}")
 
 
