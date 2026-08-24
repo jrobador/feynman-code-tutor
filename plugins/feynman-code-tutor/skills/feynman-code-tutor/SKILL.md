@@ -156,6 +156,11 @@ in Spanish, not transliterated. Keep code, identifiers, and file paths untransla
 python3 scripts/build_lesson.py lesson.json -o feynman-<system-name>.html
 ```
 
+**Keep the `lesson.json` next to the HTML you deliver** — save it as
+`feynman-<system-name>.lesson.json`. The HTML is a build artifact; the JSON is the source. Without
+it a typo means re-authoring the whole dossier from scratch, and there is no way to revise, extend,
+or re-target the lesson later. Tell the user both files are theirs.
+
 The script validates the schema, reports what is missing in plain language, and emits one
 self-contained HTML file — no network, no CDN, no build step. It owns all the interactive
 machinery (gating, jargon detection, progress, language switching), so you never hand-write that:

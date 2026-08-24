@@ -965,20 +965,29 @@ def ask(question):
     renderReport();
   }
 
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
   function renderReport() {
     var rows = [];
     function label(st) { return st === "v" ? t("verified") : st === "u" ? t("unverified") : t("incomplete"); }
-    function row(name, st) {
-      rows.push('<div class="rrow"><span>' + name + '</span><span class="rstat ' + st + '">'
-        + label(st) + "</span></div>");
+    // Each row carries a stable id as well as its display name. The name is
+    // bilingual and will drift; anything reading this report back -- a study
+    // system, a script -- needs a key that does not move.
+    function row(id, name, st) {
+      rows.push('<div class="rrow" data-id="' + esc(id) + '"><span>' + esc(name)
+        + '</span><span class="rstat ' + st + '">' + label(st) + "</span></div>");
     }
-    row(S.lang === "es" ? "La hoja en blanco" : "The blank page", statusOf("blank"));
+    row("blank", S.lang === "es" ? "La hoja en blanco" : "The blank page", statusOf("blank"));
     CFG.conceptIds.forEach(function (cid) {
       var nm = CFG.names[cid] || {};
-      row(nm[S.lang] || nm.en || cid, conceptStatus(cid));
+      row(cid, nm[S.lang] || nm.en || cid, conceptStatus(cid));
     });
-    row(S.lang === "es" ? "Reconstrucción" : "Rebuild", statusOf("rebuild"));
-    row(S.lang === "es" ? "Registro senior" : "Senior register", statusOf("senior"));
+    row("rebuild", S.lang === "es" ? "Reconstrucción" : "Rebuild", statusOf("rebuild"));
+    row("senior", S.lang === "es" ? "Registro senior" : "Senior register", statusOf("senior"));
     var el = $("#reportbody");
     if (el) el.innerHTML = rows.join("");
   }
@@ -986,7 +995,8 @@ def ask(question):
   function reportText() {
     var out = ["Feynman dossier — " + (CFG.systemName || ""), ""];
     $$("#reportbody .rrow").forEach(function (r) {
-      out.push("- " + r.children[0].textContent + ": " + r.children[1].textContent);
+      out.push("- [" + (r.getAttribute("data-id") || "") + "] "
+        + r.children[0].textContent + ": " + r.children[1].textContent);
     });
     out.push("", "Progress: " + progress() + "%");
     return out.join("\n");
